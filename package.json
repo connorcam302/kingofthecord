@@ -37,6 +37,7 @@
 		"vite": "^5.4.11"
 	},
 	"dependencies": {
+		"@laihoe/demoparser2": "^0.33.1",
 		"@libsql/client": "^0.9.0",
 		"@tailwindcss/typography": "^0.5.15",
 		"drizzle-orm": "^0.33.0"

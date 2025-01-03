@@ -25,12 +25,15 @@
       "fiveK": 0,
       "alive_time_total": 596,
       "assists_total": 9,
+      "damage_total": 2571,
       "deaths_total": 15,
+      "enemies_flashed_total": 5,
       "headshot_kills_total": 12,
       "kills_total": 23,
       "mvps": 2,
       "score": 59,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 218
     },
     {
       "name": "Alfie",
@@ -43,12 +46,15 @@
       "fiveK": 0,
       "alive_time_total": 668,
       "assists_total": 6,
+      "damage_total": 1826,
       "deaths_total": 15,
+      "enemies_flashed_total": 6,
       "headshot_kills_total": 11,
       "kills_total": 18,
       "mvps": 2,
       "score": 44,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 57
     },
     {
       "name": "olay olahh bobada spunga",
@@ -61,12 +67,15 @@
       "fiveK": 0,
       "alive_time_total": 632,
       "assists_total": 8,
+      "damage_total": 2236,
       "deaths_total": 18,
+      "enemies_flashed_total": 1,
       "headshot_kills_total": 8,
       "kills_total": 19,
       "mvps": 5,
       "score": 50,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 0
     },
     {
       "name": "Ice-Melter",
@@ -79,12 +88,15 @@
       "fiveK": 0,
       "alive_time_total": 610,
       "assists_total": 3,
+      "damage_total": 2252,
       "deaths_total": 16,
+      "enemies_flashed_total": 6,
       "headshot_kills_total": 7,
       "kills_total": 23,
       "mvps": 3,
       "score": 57,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 50
     },
     {
       "name": "leave it all behind",
@@ -97,12 +109,15 @@
       "fiveK": 0,
       "alive_time_total": 852,
       "assists_total": 4,
+      "damage_total": 1325,
       "deaths_total": 19,
+      "enemies_flashed_total": 2,
       "headshot_kills_total": 8,
       "kills_total": 13,
       "mvps": 1,
       "score": 35,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 0
     },
     {
       "name": "Richard Sweetly",
@@ -115,12 +130,15 @@
       "fiveK": 0,
       "alive_time_total": 703,
       "assists_total": 6,
+      "damage_total": 2110,
       "deaths_total": 20,
+      "enemies_flashed_total": 0,
       "headshot_kills_total": 6,
       "kills_total": 16,
       "mvps": 2,
       "score": 47,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 5
     },
     {
       "name": "Brock",
@@ -133,12 +151,15 @@
       "fiveK": 0,
       "alive_time_total": 669,
       "assists_total": 4,
+      "damage_total": 1400,
       "deaths_total": 18,
+      "enemies_flashed_total": 6,
       "headshot_kills_total": 1,
       "kills_total": 14,
       "mvps": 3,
       "score": 41,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 0
     },
     {
       "name": "DcoyElement",
@@ -151,12 +172,15 @@
       "fiveK": 0,
       "alive_time_total": 577,
       "assists_total": 4,
+      "damage_total": 3064,
       "deaths_total": 16,
+      "enemies_flashed_total": 6,
       "headshot_kills_total": 8,
       "kills_total": 33,
       "mvps": 6,
       "score": 78,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 55
     },
     {
       "name": "tiffers",
@@ -169,12 +193,15 @@
       "fiveK": 0,
       "alive_time_total": 706,
       "assists_total": 11,
+      "damage_total": 1494,
       "deaths_total": 23,
+      "enemies_flashed_total": 1,
       "headshot_kills_total": 3,
       "kills_total": 10,
       "mvps": 0,
       "score": 33,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 38
     },
     {
       "name": "Purrito",
@@ -187,12 +214,15 @@
       "fiveK": 0,
       "alive_time_total": 670,
       "assists_total": 4,
+      "damage_total": 1057,
       "deaths_total": 19,
+      "enemies_flashed_total": 0,
       "headshot_kills_total": 1,
       "kills_total": 8,
       "mvps": 0,
       "score": 20,
-      "tick": 138258
+      "tick": 138258,
+      "utility_damage_total": 32
     }
   ],
   "rounds": [

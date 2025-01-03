@@ -10,6 +10,8 @@ export const POST: RequestHandler = async () => {
 	try {
 		await fs.mkdir(matchesDir, { recursive: true });
 		const files = await fs.readdir(demosDir);
+
+		await fs.writeFile(path.join(matchesDir, `matchIds.json`), JSON.stringify(files.map(file => path.basename(file, '.dem')), null, 2), 'utf-8');
 		const results = [];
 
 		for (const file of files) {
@@ -28,15 +30,7 @@ export const POST: RequestHandler = async () => {
 					console.log(`Parsing replay with ID ${id}...`);
 					const parsedData = parseReplay(id);
 
-					console.log(parsedData);
-
-					// Check the parsed data type and structure for debugging
-					console.log(`Type of parsedData:`, typeof parsedData); // Should be 'object'
-					console.log(`Contents of parsedData:`, parsedData);
-
-					// Ensure parsedData is an object before writing to file
 					if (typeof parsedData === 'object' && parsedData !== null) {
-						console.log(`Writing JSON to ${outputFilePath}`);
 						await fs.writeFile(outputFilePath, JSON.stringify(parsedData, null, 2), 'utf-8');
 						console.log(`Successfully wrote JSON for replay ID ${id}.`);
 						results.push({ id, status: 'processed', reason: null });

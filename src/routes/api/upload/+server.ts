@@ -11,7 +11,6 @@ export const POST: RequestHandler = async () => {
 		await fs.mkdir(matchesDir, { recursive: true });
 		const files = await fs.readdir(demosDir);
 
-		await fs.writeFile(path.join(matchesDir, `matchIds.json`), JSON.stringify(files.map(file => path.basename(file, '.dem')), null, 2), 'utf-8');
 		const results = [];
 
 		for (const file of files) {
@@ -44,6 +43,17 @@ export const POST: RequestHandler = async () => {
 				}
 			}
 		}
+		const matchFiles = await fs.readdir(matchesDir);
+
+		const ids = [];
+		for (const file of matchFiles) {
+			if (path.basename(file) !== 'matchIds.json') {
+				const id = path.basename(file, '.json');
+				ids.push(id);
+			}
+		}
+
+		await fs.writeFile(path.join(matchesDir, `matchIds.json`), JSON.stringify(ids, null, 2), 'utf-8');
 
 		return json({ message: 'Replay processing complete', results });
 	} catch (error) {

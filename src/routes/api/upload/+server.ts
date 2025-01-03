@@ -1,25 +1,60 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { listGameEvents, parseEvent, parseEvents, parseTicks } from '@laihoe/demoparser2';
+import fs from 'fs/promises';
+import path from 'path';
+import { parseReplay } from '$lib/utils/parseReplay'; // Import your parseReplay function
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async () => {
+	const demosDir = path.resolve(process.cwd(), 'src/lib/demos');
+	const matchesDir = path.resolve(process.cwd(), 'src/lib/server/matches');
 
-	const filePath = "/home/connor/kingofthecord/src/lib/demos/003727523440987472050_2055487250.dem"
+	try {
+		await fs.mkdir(matchesDir, { recursive: true });
+		const files = await fs.readdir(demosDir);
+		const results = [];
 
-	const gameEndTick = Math.max(...parseEvent(filePath, "round_end").map(x => x.tick))
+		for (const file of files) {
+			if (path.extname(file) === '.dem') {
+				const id = path.basename(file, '.dem');
+				const outputFilePath = path.join(matchesDir, `${id}.json`);
 
-	const fields = ["kills_total", "deaths_total", "mvps", "headshot_kills_total", "ace_rounds_total", "score", "assists_total", "alive_time_total", "4k_rounds_total", "3k_rounds_total"]
-	const scoreboard = parseTicks(filePath, fields, [gameEndTick])
+				try {
+					await fs.access(outputFilePath);
+					console.log(`Skipping replay ID ${id}: JSON file already exists.`);
+					results.push({ id, status: 'skipped', reason: 'JSON file already exists' });
+					continue;
+				} catch { }
 
-	const eventNames = listGameEvents(filePath)
+				try {
+					console.log(`Parsing replay with ID ${id}...`);
+					const parsedData = parseReplay(id);
 
-	console.log(eventNames)
+					console.log(parsedData);
 
-	// Currently the event "all" gives you all events. Cursed solution for now
-	const allEvents = parseEvents(filePath, ['player_hurt', 'player_death'])
+					// Check the parsed data type and structure for debugging
+					console.log(`Type of parsedData:`, typeof parsedData); // Should be 'object'
+					console.log(`Contents of parsedData:`, parsedData);
 
-	const roundTimers = parseEvents(filePath, ['round_prestart'])
+					// Ensure parsedData is an object before writing to file
+					if (typeof parsedData === 'object' && parsedData !== null) {
+						console.log(`Writing JSON to ${outputFilePath}`);
+						await fs.writeFile(outputFilePath, JSON.stringify(parsedData, null, 2), 'utf-8');
+						console.log(`Successfully wrote JSON for replay ID ${id}.`);
+						results.push({ id, status: 'processed', reason: null });
+					} else {
+						console.error(`Invalid parsed data for replay ID ${id}:`, parsedData);
+						results.push({ id, status: 'failed', reason: 'Invalid parsed data' });
+					}
+				} catch (error) {
+					console.error(`Error processing replay ID ${id}:`, error);
+					results.push({ id, status: 'failed', reason: error.message });
+				}
+			}
+		}
 
-	return json(roundTimers)
-
-	//return json(scoreboard)
+		return json({ message: 'Replay processing complete', results });
+	} catch (error) {
+		console.error('Error in replay processing endpoint:', error);
+		return json({ error: 'Failed to process replays', details: error.message }, { status: 500 });
+	}
 };
+

@@ -21,7 +21,7 @@ export const parseReplay = (id: string) => {
 
 	const gameEndTick = Math.max(...parseEvent(filePath, "round_end").map(x => x.tick))
 
-	const fields = ["kills_total", "deaths_total", "mvps", "headshot_kills_total", "score", "assists_total", "alive_time_total"]
+	const fields = ["kills_total", "deaths_total", "mvps", "headshot_kills_total", "score", "assists_total", "alive_time_total, damage_total", "enemies_flashed_total", "equipment_value_total", "utility_damage_total"]
 	const scoreboard = parseTicks(filePath, fields, [gameEndTick])
 
 	const playerInfo = parsePlayerInfo(filePath)

@@ -1,8 +1,9 @@
 <script lang="ts">
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
+	const { matchData, matchId }: { matchData } = data;
 
-	const { id } = data;
+	console.log(matchData);
 </script>
 
-<div>{id}</div>
+<div>{matchId}</div>

@@ -1,4 +1,4 @@
-export interface Welcome {
+export interface MatchData {
 	lobbyInfo: LobbyInfo;
 	playerStats: PlayerStat[];
 	rounds: Round[];

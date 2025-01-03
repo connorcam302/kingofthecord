@@ -4,7 +4,6 @@ export const load = async ({ params }) => {
 		return matchIds.default;
 	}
 
-
 	return {
 		matchIds: await matchIds()
 	};

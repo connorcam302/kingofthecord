@@ -1,6 +1,7 @@
 <script>
 	export let label;
 	export let column;
+	export let classProps;
 
 	// Function to handle sorting toggle
 	const toggleSorting = () => {
@@ -15,7 +16,7 @@
 	};
 </script>
 
-<button on:click={toggleSorting}>
+<button on:click={toggleSorting} class={classProps}>
 	<span>{label}</span>
 	<span class="absolute pl-2">{getSortIcon(column.getIsSorted())}</span>
 </button>

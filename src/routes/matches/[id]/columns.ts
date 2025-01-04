@@ -52,7 +52,12 @@ export type AdvancedTeamData = {
 export const basicColumns: ColumnDef<BasicTeamData>[] = [
 	{
 		accessorKey: "name",
-		header: "Name",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Name",
+				classProps: "w-32",
+				column,
+			}),
 		cell: ({ row }) => {
 
 			const nameCellSnippet = createRawSnippet<[string]>((getName) => {

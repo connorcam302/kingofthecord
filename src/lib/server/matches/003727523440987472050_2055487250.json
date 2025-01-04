@@ -11,15 +11,16 @@
     "game_directory": "/opt/srcds/cs2/csgo_v2000460/csgo",
     "map_name": "de_vertigo",
     "network_protocol": "14057",
-    "server_name": "Valve Counter-Strike 2 london Server (srcds1005-lhr1.390.202)"
+    "server_name": "Valve Counter-Strike 2 london Server (srcds1005-lhr1.390.202)",
+    "timestamp": 1735761106
   },
   "playerStats": [
     {
       "name": "2colfox",
       "steamid": "76561198046884782",
       "team_number": 2,
-      "oneK": 15,
-      "twoK": 7,
+      "oneK": 8,
+      "twoK": 6,
       "threeK": 1,
       "fourK": 0,
       "fiveK": 0,
@@ -39,7 +40,7 @@
       "name": "Alfie",
       "steamid": "76561198159005292",
       "team_number": 2,
-      "oneK": 14,
+      "oneK": 10,
       "twoK": 4,
       "threeK": 0,
       "fourK": 0,
@@ -60,9 +61,9 @@
       "name": "olay olahh bobada spunga",
       "steamid": "76561198042044970",
       "team_number": 2,
-      "oneK": 11,
-      "twoK": 5,
-      "threeK": 2,
+      "oneK": 6,
+      "twoK": 3,
+      "threeK": 1,
       "fourK": 1,
       "fiveK": 0,
       "alive_time_total": 632,
@@ -81,8 +82,8 @@
       "name": "Ice-Melter",
       "steamid": "76561198093204957",
       "team_number": 2,
-      "oneK": 15,
-      "twoK": 5,
+      "oneK": 10,
+      "twoK": 2,
       "threeK": 3,
       "fourK": 0,
       "fiveK": 0,
@@ -102,7 +103,7 @@
       "name": "leave it all behind",
       "steamid": "76561198040636119",
       "team_number": 2,
-      "oneK": 11,
+      "oneK": 9,
       "twoK": 2,
       "threeK": 0,
       "fourK": 0,
@@ -123,7 +124,7 @@
       "name": "Richard Sweetly",
       "steamid": "76561198066770946",
       "team_number": 3,
-      "oneK": 15,
+      "oneK": 14,
       "twoK": 1,
       "threeK": 0,
       "fourK": 0,
@@ -144,8 +145,8 @@
       "name": "Brock",
       "steamid": "76561198273647139",
       "team_number": 3,
-      "oneK": 9,
-      "twoK": 4,
+      "oneK": 5,
+      "twoK": 3,
       "threeK": 1,
       "fourK": 0,
       "fiveK": 0,
@@ -165,9 +166,9 @@
       "name": "DcoyElement",
       "steamid": "76561198122107609",
       "team_number": 3,
-      "oneK": 17,
-      "twoK": 10,
-      "threeK": 4,
+      "oneK": 7,
+      "twoK": 6,
+      "threeK": 2,
       "fourK": 2,
       "fiveK": 0,
       "alive_time_total": 577,
@@ -186,7 +187,7 @@
       "name": "tiffers",
       "steamid": "76561198061148990",
       "team_number": 3,
-      "oneK": 9,
+      "oneK": 8,
       "twoK": 1,
       "threeK": 0,
       "fourK": 0,
@@ -207,7 +208,7 @@
       "name": "Purrito",
       "steamid": "76561198092288421",
       "team_number": 3,
-      "oneK": 7,
+      "oneK": 6,
       "twoK": 1,
       "threeK": 0,
       "fourK": 0,
@@ -2642,7 +2643,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 4,
@@ -4839,7 +4840,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 7,
@@ -7783,7 +7784,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 11,
@@ -13485,7 +13486,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 19,
@@ -14935,7 +14936,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 21,
@@ -15612,7 +15613,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 22,
@@ -16261,7 +16262,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 23,
@@ -16993,7 +16994,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 24,

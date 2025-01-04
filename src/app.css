@@ -73,3 +73,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+html {
+	overflow-y: scroll;
+	overflox-x: scroll;
+}
+
+*::-webkit-scrollbar {
+	width: 4px;
+	height: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: #e7e5e4;
+	border-radius: 64px;
+}
+
+

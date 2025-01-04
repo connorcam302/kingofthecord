@@ -11,14 +11,15 @@
     "game_directory": "/opt/srcds/cs2/csgo_v2000460/csgo",
     "map_name": "de_inferno",
     "network_protocol": "14057",
-    "server_name": "Valve Counter-Strike 2 london Server (srcds1002-lhr1.390.211)"
+    "server_name": "Valve Counter-Strike 2 london Server (srcds1002-lhr1.390.211)",
+    "timestamp": 1735855781
   },
   "playerStats": [
     {
       "name": "2colfox",
       "steamid": "76561198046884782",
       "team_number": 2,
-      "oneK": 12,
+      "oneK": 10,
       "twoK": 2,
       "threeK": 0,
       "fourK": 0,
@@ -39,7 +40,7 @@
       "name": "Brock",
       "steamid": "76561198273647139",
       "team_number": 2,
-      "oneK": 9,
+      "oneK": 7,
       "twoK": 2,
       "threeK": 0,
       "fourK": 0,
@@ -60,8 +61,8 @@
       "name": "olay olahh bobada spunga",
       "steamid": "76561198042044970",
       "team_number": 2,
-      "oneK": 16,
-      "twoK": 10,
+      "oneK": 6,
+      "twoK": 7,
       "threeK": 3,
       "fourK": 0,
       "fiveK": 0,
@@ -81,7 +82,7 @@
       "name": "Pedro Potto.Eijun_Sawamura",
       "steamid": "76561198091576900",
       "team_number": 2,
-      "oneK": 15,
+      "oneK": 10,
       "twoK": 5,
       "threeK": 0,
       "fourK": 0,
@@ -102,8 +103,8 @@
       "name": "tiffers",
       "steamid": "76561198061148990",
       "team_number": 2,
-      "oneK": 13,
-      "twoK": 4,
+      "oneK": 9,
+      "twoK": 3,
       "threeK": 1,
       "fourK": 0,
       "fiveK": 0,
@@ -123,7 +124,7 @@
       "name": "Richard Sweetly",
       "steamid": "76561198066770946",
       "team_number": 3,
-      "oneK": 14,
+      "oneK": 8,
       "twoK": 6,
       "threeK": 0,
       "fourK": 0,
@@ -144,8 +145,8 @@
       "name": "Ice-Melter",
       "steamid": "76561198093204957",
       "team_number": 3,
-      "oneK": 10,
-      "twoK": 6,
+      "oneK": 4,
+      "twoK": 5,
       "threeK": 1,
       "fourK": 0,
       "fiveK": 0,
@@ -165,7 +166,7 @@
       "name": "Purrito",
       "steamid": "76561198092288421",
       "team_number": 3,
-      "oneK": 4,
+      "oneK": 3,
       "twoK": 1,
       "threeK": 0,
       "fourK": 0,
@@ -186,9 +187,9 @@
       "name": "DcoyElement",
       "steamid": "76561198122107609",
       "team_number": 3,
-      "oneK": 13,
-      "twoK": 9,
-      "threeK": 4,
+      "oneK": 4,
+      "twoK": 5,
+      "threeK": 3,
       "fourK": 1,
       "fiveK": 0,
       "alive_time_total": 911,
@@ -207,7 +208,7 @@
       "name": "leave it all behind",
       "steamid": "76561198040636119",
       "team_number": 3,
-      "oneK": 8,
+      "oneK": 7,
       "twoK": 1,
       "threeK": 0,
       "fourK": 0,
@@ -3258,7 +3259,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 5,
@@ -6261,7 +6262,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 9,
@@ -7039,7 +7040,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 10,
@@ -7751,7 +7752,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 11,
@@ -8403,7 +8404,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 12,
@@ -9017,7 +9018,7 @@
           ]
         }
       ],
-      "winner": "teamTwo"
+      "winner": "teamOne"
     },
     {
       "round": 13,
@@ -11884,7 +11885,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 17,
@@ -13324,7 +13325,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 19,
@@ -13958,7 +13959,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 20,
@@ -16064,7 +16065,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 23,
@@ -16864,7 +16865,7 @@
           ]
         }
       ],
-      "winner": "teamOne"
+      "winner": "teamTwo"
     },
     {
       "round": 24,

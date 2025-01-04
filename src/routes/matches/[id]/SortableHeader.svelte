@@ -16,7 +16,7 @@
 	};
 </script>
 
-<button on:click={toggleSorting} class={classProps}>
-	<span>{label}</span>
+<button on:click={toggleSorting}>
+	<span class="truncate">{label}</span>
 	<span class="absolute pl-2">{getSortIcon(column.getIsSorted())}</span>
 </button>

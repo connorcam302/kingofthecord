@@ -16,21 +16,51 @@ export interface DamageEvent {
 	weapon: string
 }
 
+const matchDates = [
+	{
+		id: "003727518368631095638_1566301360",
+		timestamp: 1735758910
+	},
+	{
+		id: "003727523440987472050_2055487250",
+		timestamp: 1735761106
+	},
+	{
+		id: "003727720897813938500_0975402058",
+		timestamp: 1735852730
+	},
+	{
+		id: "003727727250070569279_1535216708",
+		timestamp: 1735855781
+	},
+	{
+		id: "003727912309473935725_0429404906",
+		timestamp: 1735941792
+	},
+	{
+		id: "003727918462014587385_0551724679",
+		timestamp: 1735944075
+	}
+
+]
+
 export const parseReplay = (id: string) => {
 	const filePath = path.resolve(process.cwd(), `src/lib/demos/${id}.dem`).toString();
 
 	const gameEndTick = Math.max(...parseEvent(filePath, "round_end").map(x => x.tick))
+	console.log(parseTicks(filePath, ['match_start_time'], [gameEndTick]))
 
 	const fields = ["kills_total", "deaths_total", "mvps", "headshot_kills_total", "score", "assists_total", "alive_time_total", "damage_total", "enemies_flashed_total", "equipment_value_total", "utility_damage_total"]
 	const scoreboard = parseTicks(filePath, fields, [gameEndTick])
 
 	const playerInfo = parsePlayerInfo(filePath)
-	const lobbyInfo = parseHeader(filePath)
+	const lobbyInfo = { ...parseHeader(filePath), timestamp: matchDates.find(x => x.id === id)?.timestamp || Math.floor(Date.now() / 1000) }
 	const damageEvents: DamageEvent[] = parseEvents(filePath, ['player_death', 'player_hurt'])
 
 	const roundTimers = parseEvents(filePath, ['round_prestart', 'cs_win_panel_match'])
-	const captainOne = playerInfo[0]
-	const captainTwo = playerInfo.find(x => x.team_number !== captainOne.team_number)
+
+	const captainOne = playerInfo.find(x => x.team_number === 2)
+	const captainTwo = playerInfo.find(x => x.team_number === 3)
 
 	const rounds = roundTimers.map((x: any, i: number) => {
 		return {
@@ -84,9 +114,11 @@ export const parseReplay = (id: string) => {
 
 
 		}
-		rounds[i - 1] = {
-			...rounds[i - 1],
-			winner: rounds[i].teamOneScore > rounds[i].teamTwoScore ? 'teamOne' : 'teamTwo'
+		if (i > 0) {
+			rounds[i - 1] = {
+				...rounds[i - 1],
+				winner: (rounds[i].teamOneScore > rounds[i - 1].teamOneScore ? 'teamOne' : 'teamTwo')
+			}
 		}
 	}
 
@@ -95,7 +127,7 @@ export const parseReplay = (id: string) => {
 		for (let i = 0; i < rounds.length; i++) {
 			const round = rounds[i];
 			const damage = round.damage.find(x => x.attacker_steamid === steamid);
-			if (damage && damage.damage_dealt.filter(x => x.killed).length >= amount) {
+			if (damage && damage.damage_dealt.filter(x => x.killed).length === amount) {
 				count++;
 			}
 		}

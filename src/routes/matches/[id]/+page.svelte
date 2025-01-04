@@ -174,7 +174,7 @@
 				</div>
 				<div class="text-2xl">Round {selectedRound.round}</div>
 				<div class="flex justify-between">
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-2 rounded-md border">
 						<table>
 							<thead>
 								<tr>
@@ -186,7 +186,7 @@
 							</thead>
 							<tbody>
 								{#each selectedRound.damage.filter((x) => x.team === teamOne) as player}
-									<tr>
+									<tr class="border-y px-2">
 										<td>{player.attacker_name}</td>
 										<td class="text-center"
 											>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td

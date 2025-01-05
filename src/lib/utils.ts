@@ -9,3 +9,70 @@ export const getMapString = (map: string) => {
 	//remove de_ from the start, capitalise first character after de_ and if there is a number put a space before it
 	return map.replace("de_", "").charAt(0).toUpperCase() + map.replace("de_", "").slice(1).replace(/[0-9]/g, " $&");
 };
+
+export const calculateHLTVRating = (killsPerRound,
+	deathsPerRound,
+	assistsPerRound,
+	impact,
+	adr, // Average Damage per Round
+	survivalRate) => {
+	const weights = {
+		kpr: 0.35,       // Kills Per Round
+		dpr: -0.15,      // Deaths Per Round (negative weight because lower is better)
+		apr: 0.1,        // Assists Per Round
+		impact: 0.2,     // Impact Rating
+		adr: 0.2,        // Average Damage per Round
+		survivalRate: 0.1, // Survival Rate
+	};
+
+	// Normalize inputs to a scale similar to HLTV's (around 1.00 as average)
+	const normalized = {
+		kpr: killsPerRound / 0.75,       // Average KPR is about 0.75
+		dpr: 1 - deathsPerRound / 0.65, // Average DPR is about 0.65
+		apr: assistsPerRound / 0.15,    // Average APR is about 0.15
+		impact: impact / 1.0,           // Impact is already normalized around 1.0
+		adr: adr / 80,                  // Average ADR is about 80
+		survivalRate: survivalRate / 0.35, // Average survival rate is around 35%
+	};
+
+	// Calculate weighted rating
+	const rating =
+		weights.kpr * normalized.kpr +
+		weights.dpr * normalized.dpr +
+		weights.apr * normalized.apr +
+		weights.impact * normalized.impact +
+		weights.adr * normalized.adr +
+		weights.survivalRate * normalized.survivalRate;
+
+	return parseFloat(rating.toFixed(2));
+};
+
+export const calculateDeathsPerRound = (deaths, rounds) => {
+	return (deaths / rounds).toFixed(2);
+};
+
+export const calculateKillsPerRound = (kills, rounds) => {
+	return (kills / rounds).toFixed(2);
+};
+
+export const calculateAssistsPerRound = (assists, rounds) => {
+	return (assists / rounds).toFixed(2);
+};
+
+export const calculateADR = (damage, rounds) => {
+	return (kills / rounds).toFixed(2);
+};
+
+export const calculateImpact = (playerStats) => {
+	// Extract multikill data from playerStats
+	const { twoK, threeK, fourK, fiveK } = playerStats;
+
+	// Define points for each type of multikill
+	const impactScore = (twoK * 1) + (threeK * 2) + (fourK * 3) + (fiveK * 5);
+
+	return impactScore;
+}
+
+export const calculateSurvivalRate = (roundsSurvived, rounds) => {
+	return (roundsSurvived / rounds).toFixed(2);
+}

@@ -261,7 +261,7 @@
               "events": []
             },
             {
-              "damage": 234,
+              "damage": 117,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -489,7 +489,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 141,
+              "damage": 114,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -533,7 +533,7 @@
               ]
             },
             {
-              "damage": 273,
+              "damage": 163,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -577,7 +577,7 @@
               "events": []
             },
             {
-              "damage": 301,
+              "damage": 191,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -649,7 +649,7 @@
               "events": []
             },
             {
-              "damage": 112,
+              "damage": 103,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -819,7 +819,7 @@
               "events": []
             },
             {
-              "damage": 127,
+              "damage": 104,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -1085,7 +1085,7 @@
               "events": []
             },
             {
-              "damage": 183,
+              "damage": 122,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -1144,7 +1144,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 139,
+              "damage": 114,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -1358,7 +1358,7 @@
               "events": []
             },
             {
-              "damage": 104,
+              "damage": 78,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -1402,7 +1402,7 @@
               ]
             },
             {
-              "damage": 128,
+              "damage": 105,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -1482,7 +1482,7 @@
               ]
             },
             {
-              "damage": 44,
+              "damage": 22,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -1533,7 +1533,7 @@
               "events": []
             },
             {
-              "damage": 51,
+              "damage": 38,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -1594,7 +1594,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 142,
+              "damage": 120,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -1645,7 +1645,7 @@
               ]
             },
             {
-              "damage": 136,
+              "damage": 110,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -1717,7 +1717,7 @@
               "events": []
             },
             {
-              "damage": 210,
+              "damage": 128,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -1880,7 +1880,7 @@
               "events": []
             },
             {
-              "damage": 138,
+              "damage": 115,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -1931,7 +1931,7 @@
               ]
             },
             {
-              "damage": 125,
+              "damage": 100,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -2153,7 +2153,7 @@
               "events": []
             },
             {
-              "damage": 123,
+              "damage": 106,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -2504,7 +2504,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 121,
+              "damage": 98,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -2548,7 +2548,7 @@
               ]
             },
             {
-              "damage": 90,
+              "damage": 60,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -2628,7 +2628,7 @@
               "events": []
             },
             {
-              "damage": 222,
+              "damage": 111,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -2723,7 +2723,7 @@
               ]
             },
             {
-              "damage": 302,
+              "damage": 194,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -2837,7 +2837,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 68,
+              "damage": 34,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -2916,7 +2916,7 @@
               "events": []
             },
             {
-              "damage": 149,
+              "damage": 122,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -2960,7 +2960,7 @@
               ]
             },
             {
-              "damage": 42,
+              "damage": 21,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -3007,7 +3007,7 @@
               "events": []
             },
             {
-              "damage": 127,
+              "damage": 113,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -3128,7 +3128,7 @@
               "events": []
             },
             {
-              "damage": 130,
+              "damage": 113,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -3356,7 +3356,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 82,
+              "damage": 55,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -3422,7 +3422,7 @@
               "events": []
             },
             {
-              "damage": 136,
+              "damage": 102,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -3502,7 +3502,7 @@
               "events": []
             },
             {
-              "damage": 87,
+              "damage": 58,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -3610,7 +3610,7 @@
               "events": []
             },
             {
-              "damage": 140,
+              "damage": 105,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -3654,7 +3654,7 @@
               "events": []
             },
             {
-              "damage": 118,
+              "damage": 85,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -3757,7 +3757,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 200,
+              "damage": 111,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -3787,7 +3787,7 @@
               ]
             },
             {
-              "damage": 146,
+              "damage": 122,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -3852,7 +3852,7 @@
               "events": []
             },
             {
-              "damage": 245,
+              "damage": 139,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -3903,7 +3903,7 @@
               "events": []
             },
             {
-              "damage": 143,
+              "damage": 112,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -3947,7 +3947,7 @@
               ]
             },
             {
-              "damage": 203,
+              "damage": 114,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -4367,7 +4367,7 @@
               "events": []
             },
             {
-              "damage": 214,
+              "damage": 107,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -4432,7 +4432,7 @@
               "events": []
             },
             {
-              "damage": 144,
+              "damage": 120,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -4540,7 +4540,7 @@
               "events": []
             },
             {
-              "damage": 220,
+              "damage": 110,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -4577,7 +4577,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 141,
+              "damage": 114,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -4678,7 +4678,7 @@
               ]
             },
             {
-              "damage": 144,
+              "damage": 120,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -4862,7 +4862,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 218,
+              "damage": 109,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -4885,7 +4885,7 @@
               ]
             },
             {
-              "damage": 141,
+              "damage": 114,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -4943,7 +4943,7 @@
               "events": []
             },
             {
-              "damage": 208,
+              "damage": 104,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -4966,7 +4966,7 @@
               ]
             },
             {
-              "damage": 135,
+              "damage": 108,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -5176,7 +5176,7 @@
               "events": []
             },
             {
-              "damage": 220,
+              "damage": 110,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -5256,7 +5256,7 @@
               ]
             },
             {
-              "damage": 242,
+              "damage": 154,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -5379,7 +5379,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 124,
+              "damage": 111,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -5444,7 +5444,7 @@
               ]
             },
             {
-              "damage": 132,
+              "damage": 114,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -5588,7 +5588,7 @@
               ]
             },
             {
-              "damage": 108,
+              "damage": 81,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -5625,7 +5625,7 @@
               ]
             },
             {
-              "damage": 152,
+              "damage": 119,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -5755,7 +5755,7 @@
               "events": []
             },
             {
-              "damage": 72,
+              "damage": 36,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -6104,7 +6104,7 @@
               "events": []
             },
             {
-              "damage": 144,
+              "damage": 112,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -6169,7 +6169,7 @@
               "events": []
             },
             {
-              "damage": 212,
+              "damage": 106,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -6206,7 +6206,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 133,
+              "damage": 106,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -6292,7 +6292,7 @@
               "events": []
             },
             {
-              "damage": 149,
+              "damage": 122,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -6378,7 +6378,7 @@
               "events": []
             },
             {
-              "damage": 226,
+              "damage": 113,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -6603,7 +6603,7 @@
               "events": []
             },
             {
-              "damage": 229,
+              "damage": 139,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -6717,7 +6717,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 132,
+              "damage": 101,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -6853,7 +6853,7 @@
               "events": []
             },
             {
-              "damage": 136,
+              "damage": 102,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -6975,7 +6975,7 @@
               "events": []
             },
             {
-              "damage": 52,
+              "damage": 26,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -6998,7 +6998,7 @@
               ]
             },
             {
-              "damage": 140,
+              "damage": 105,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -7056,7 +7056,7 @@
               "events": []
             },
             {
-              "damage": 226,
+              "damage": 113,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -7216,7 +7216,7 @@
               "events": []
             },
             {
-              "damage": 166,
+              "damage": 83,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -7501,7 +7501,7 @@
               "events": []
             },
             {
-              "damage": 242,
+              "damage": 134,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -7587,7 +7587,7 @@
               "events": []
             },
             {
-              "damage": 149,
+              "damage": 122,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -7638,7 +7638,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 272,
+              "damage": 136,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -7675,7 +7675,7 @@
               "events": []
             },
             {
-              "damage": 218,
+              "damage": 109,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -7785,7 +7785,7 @@
               "events": []
             },
             {
-              "damage": 112,
+              "damage": 87,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -7822,7 +7822,7 @@
               ]
             },
             {
-              "damage": 127,
+              "damage": 104,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -8036,7 +8036,7 @@
               "events": []
             },
             {
-              "damage": 220,
+              "damage": 110,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -8066,7 +8066,7 @@
               "events": []
             },
             {
-              "damage": 249,
+              "damage": 141,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -8223,7 +8223,7 @@
               "events": []
             },
             {
-              "damage": 115,
+              "damage": 107,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -8358,7 +8358,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 274,
+              "damage": 137,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -8562,7 +8562,7 @@
               "events": []
             },
             {
-              "damage": 207,
+              "damage": 126,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -8621,7 +8621,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 164,
+              "damage": 103,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -8736,7 +8736,7 @@
               "events": []
             },
             {
-              "damage": 108,
+              "damage": 72,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -8889,7 +8889,7 @@
               ]
             },
             {
-              "damage": 126,
+              "damage": 94,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -8940,7 +8940,7 @@
               "events": []
             },
             {
-              "damage": 268,
+              "damage": 134,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -8963,7 +8963,7 @@
               ]
             },
             {
-              "damage": 276,
+              "damage": 153,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -9000,7 +9000,7 @@
               ]
             },
             {
-              "damage": 64,
+              "damage": 32,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -9087,7 +9087,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 274,
+              "damage": 137,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -9163,7 +9163,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 32,
+              "damage": 16,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -9292,7 +9292,7 @@
               "events": []
             },
             {
-              "damage": 114,
+              "damage": 100,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -9364,7 +9364,7 @@
               "events": []
             },
             {
-              "damage": 184,
+              "damage": 123,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -9473,7 +9473,7 @@
               "events": []
             },
             {
-              "damage": 114,
+              "damage": 101,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -9707,7 +9707,7 @@
               "events": []
             },
             {
-              "damage": 202,
+              "damage": 112,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -9808,7 +9808,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 138,
+              "damage": 115,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -9881,7 +9881,7 @@
               ]
             },
             {
-              "damage": 74,
+              "damage": 62,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -10083,7 +10083,7 @@
               "events": []
             },
             {
-              "damage": 140,
+              "damage": 105,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -10148,7 +10148,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 276,
+              "damage": 138,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -10178,7 +10178,7 @@
               "events": []
             },
             {
-              "damage": 317,
+              "damage": 176,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -10215,7 +10215,7 @@
               "events": []
             },
             {
-              "damage": 270,
+              "damage": 162,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -10488,7 +10488,7 @@
               "events": []
             },
             {
-              "damage": 185,
+              "damage": 134,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -10560,7 +10560,7 @@
               ]
             },
             {
-              "damage": 87,
+              "damage": 73,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -10721,7 +10721,7 @@
               ]
             },
             {
-              "damage": 152,
+              "damage": 110,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -10765,7 +10765,7 @@
               "events": []
             },
             {
-              "damage": 338,
+              "damage": 196,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -10809,7 +10809,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 135,
+              "damage": 108,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -10951,7 +10951,7 @@
               "events": []
             },
             {
-              "damage": 310,
+              "damage": 172,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -11194,7 +11194,7 @@
               "events": []
             },
             {
-              "damage": 210,
+              "damage": 105,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -11245,7 +11245,7 @@
               "events": []
             },
             {
-              "damage": 135,
+              "damage": 113,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -11483,7 +11483,7 @@
               "events": []
             },
             {
-              "damage": 216,
+              "damage": 108,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -11576,7 +11576,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 264,
+              "damage": 158,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -11833,7 +11833,7 @@
               "events": []
             },
             {
-              "damage": 128,
+              "damage": 105,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -11863,7 +11863,7 @@
               ]
             },
             {
-              "damage": 46,
+              "damage": 23,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -11935,7 +11935,7 @@
               "events": []
             },
             {
-              "damage": 110,
+              "damage": 55,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -12088,7 +12088,7 @@
               "events": []
             },
             {
-              "damage": 240,
+              "damage": 133,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -12118,7 +12118,7 @@
               ]
             },
             {
-              "damage": 222,
+              "damage": 111,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -12148,7 +12148,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 212,
+              "damage": 106,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -12171,7 +12171,7 @@
               ]
             },
             {
-              "damage": 108,
+              "damage": 81,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -12208,7 +12208,7 @@
               ]
             },
             {
-              "damage": 245,
+              "damage": 136,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -12407,7 +12407,7 @@
               "events": []
             },
             {
-              "damage": 48,
+              "damage": 24,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -12437,7 +12437,7 @@
               "events": []
             },
             {
-              "damage": 224,
+              "damage": 134,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -12612,7 +12612,7 @@
               "events": []
             },
             {
-              "damage": 299,
+              "damage": 190,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -12768,7 +12768,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 220,
+              "damage": 110,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -12862,7 +12862,7 @@
               "events": []
             },
             {
-              "damage": 210,
+              "damage": 105,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -13048,7 +13048,7 @@
               "events": []
             },
             {
-              "damage": 216,
+              "damage": 129,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -13113,7 +13113,7 @@
               "events": []
             },
             {
-              "damage": 116,
+              "damage": 106,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -13330,7 +13330,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 272,
+              "damage": 136,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -13353,7 +13353,7 @@
               ]
             },
             {
-              "damage": 218,
+              "damage": 109,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -13425,7 +13425,7 @@
               "events": []
             },
             {
-              "damage": 142,
+              "damage": 115,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -13525,7 +13525,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 210,
+              "damage": 123,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -13562,7 +13562,7 @@
               ]
             },
             {
-              "damage": 138,
+              "damage": 116,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -13627,7 +13627,7 @@
               "events": []
             },
             {
-              "damage": 138,
+              "damage": 116,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -13756,7 +13756,7 @@
               "events": []
             },
             {
-              "damage": 93,
+              "damage": 71,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -13793,7 +13793,7 @@
               ]
             },
             {
-              "damage": 264,
+              "damage": 177,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -14002,7 +14002,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 54,
+              "damage": 27,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -14047,7 +14047,7 @@
               ]
             },
             {
-              "damage": 104,
+              "damage": 78,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -14105,7 +14105,7 @@
               "events": []
             },
             {
-              "damage": 218,
+              "damage": 109,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -14298,7 +14298,7 @@
               "events": []
             },
             {
-              "damage": 135,
+              "damage": 113,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -14413,7 +14413,7 @@
               "events": []
             },
             {
-              "damage": 142,
+              "damage": 120,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -14478,7 +14478,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 268,
+              "damage": 183,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -14544,7 +14544,7 @@
               ]
             },
             {
-              "damage": 44,
+              "damage": 22,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -14595,7 +14595,7 @@
               "events": []
             },
             {
-              "damage": 220,
+              "damage": 110,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -14716,7 +14716,7 @@
               ]
             },
             {
-              "damage": 130,
+              "damage": 104,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -14809,7 +14809,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 81,
+              "damage": 54,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -14839,7 +14839,7 @@
               ]
             },
             {
-              "damage": 220,
+              "damage": 110,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -14962,7 +14962,7 @@
               "events": []
             },
             {
-              "damage": 306,
+              "damage": 197,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -15006,7 +15006,7 @@
               ]
             },
             {
-              "damage": 93,
+              "damage": 60,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -15050,7 +15050,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 174,
+              "damage": 87,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -15109,7 +15109,7 @@
               "events": []
             },
             {
-              "damage": 56,
+              "damage": 28,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,
@@ -15204,7 +15204,7 @@
               ]
             },
             {
-              "damage": 132,
+              "damage": 110,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -15349,7 +15349,7 @@
               ]
             },
             {
-              "damage": 126,
+              "damage": 103,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -15467,7 +15467,7 @@
               "events": []
             },
             {
-              "damage": 130,
+              "damage": 104,
               "defender": "76561198093204957",
               "defenderName": "Ice-Melter",
               "killed": true,
@@ -15518,7 +15518,7 @@
               "events": []
             },
             {
-              "damage": 80,
+              "damage": 53,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -15548,7 +15548,7 @@
               ]
             },
             {
-              "damage": 270,
+              "damage": 135,
               "defender": "76561198040636119",
               "defenderName": "leave it all behind",
               "killed": true,
@@ -15692,7 +15692,7 @@
           "team": 2,
           "damage_dealt": [
             {
-              "damage": 78,
+              "damage": 52,
               "defender": "76561198066770946",
               "defenderName": "Richard Sweetly",
               "killed": true,
@@ -15729,7 +15729,7 @@
               "events": []
             },
             {
-              "damage": 142,
+              "damage": 115,
               "defender": "76561198092288421",
               "defenderName": "Purrito",
               "killed": true,
@@ -15843,7 +15843,7 @@
               "events": []
             },
             {
-              "damage": 274,
+              "damage": 184,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -15980,7 +15980,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 168,
+              "damage": 84,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -16060,7 +16060,7 @@
               "events": []
             },
             {
-              "damage": 133,
+              "damage": 111,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -16383,7 +16383,7 @@
               "events": []
             },
             {
-              "damage": 149,
+              "damage": 123,
               "defender": "76561198122107609",
               "defenderName": "DcoyElement",
               "killed": true,
@@ -16483,7 +16483,7 @@
           "team": 3,
           "damage_dealt": [
             {
-              "damage": 72,
+              "damage": 50,
               "defender": "76561198046884782",
               "defenderName": "2colfox",
               "killed": true,
@@ -16527,7 +16527,7 @@
               "events": []
             },
             {
-              "damage": 105,
+              "damage": 98,
               "defender": "76561198091576900",
               "defenderName": "Pedro Potto.Eijun_Sawamura",
               "killed": true,
@@ -16607,7 +16607,7 @@
               ]
             },
             {
-              "damage": 222,
+              "damage": 111,
               "defender": "76561198042044970",
               "defenderName": "olay olahh bobada spunga",
               "killed": true,
@@ -16658,7 +16658,7 @@
               "events": []
             },
             {
-              "damage": 85,
+              "damage": 65,
               "defender": "76561198273647139",
               "defenderName": "Brock",
               "killed": true,
@@ -16709,7 +16709,7 @@
               "events": []
             },
             {
-              "damage": 60,
+              "damage": 40,
               "defender": "76561198061148990",
               "defenderName": "tiffers",
               "killed": true,

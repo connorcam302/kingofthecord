@@ -85,7 +85,9 @@ export const parseReplay = (id: string) => {
 
 					// const create an array that contains the total damage dealt to each player
 					return {
-						damage: damageDealtToDefender.reduce((acc, x) => acc + x.dmg_health, 0),
+						damage: damageDealtToDefender
+							.filter(event => event.event_name !== "player_death")
+							.reduce((acc, x) => acc + x.dmg_health, 0),
 						defender: defender.steamid,
 						defenderName: defender.name,
 						killed: damageDealtToDefender.some(x => x.event_name === 'player_death'),

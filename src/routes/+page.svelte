@@ -19,6 +19,10 @@
 	console.log(data);
 </script>
 
+<svelte:head>
+	<title>King of the Cord</title>
+</svelte:head>
+
 <div class="mx-auto flex max-w-screen-xl flex-col gap-4 px-1">
 	<div class="mx-auto flex max-w-screen-xl flex-col justify-center gap-4 px-1">
 		<div class="mx-auto w-fit rounded-xl border">
@@ -30,7 +34,7 @@
 						<th class="md:p-2">Win Rate</th>
 						<th class="md:p-2">K/D-Diff</th>
 						<th class="md:p-2">K/D</th>
-						<th class="md:p-2" h>Rating</th>
+						<th class="md:p-2">Rating</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -56,7 +60,7 @@
 			</table>
 		</div>
 	</div>
-	{#each matchData as match, i}
+	{#each matchData.sort((a, b) => b.lobbyInfo.timestamp - a.lobbyInfo.timestamp) as match, i}
 		<button
 			class="grow rounded-lg border p-4 md:p-4"
 			style={`background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/maps/${match.lobbyInfo.map_name}.webp');background-size: cover; background-position: center;`}

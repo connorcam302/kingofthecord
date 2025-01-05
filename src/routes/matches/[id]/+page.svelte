@@ -36,6 +36,10 @@
 	let duelPlayer2 = $state(matchData.playerStats.filter((x: any) => x.team_number !== teamOne)[0]);
 </script>
 
+<svelte:head>
+	<title>Match #{matchId}</title>
+</svelte:head>
+
 <div class="mx-auto flex max-w-screen-xl flex-col gap-4 px-1">
 	<div
 		class="grow rounded-lg border p-4 md:p-4"

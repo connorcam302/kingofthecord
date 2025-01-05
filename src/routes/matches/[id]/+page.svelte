@@ -4,6 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { getMapString } from '$lib/utils';
 	import dayjs from 'dayjs';
+	import { LocateOff, Locate } from 'lucide-svelte';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -16,7 +17,11 @@
 
 	let firstTab = $state('basic');
 	let selectedRound = $state(matchData.rounds[0]);
-	let selectedPlayer = $state(matchData.playerStats[0].player_id);
+	let selectedPlayer = $state(matchData.rounds[0].damage[0]);
+
+	const changeSelectedPlayer = (player: any) => {
+		selectedPlayer = player;
+	};
 
 	const ticksToMMSS = (ticks: number) => {
 		return (
@@ -179,15 +184,45 @@
 							<thead>
 								<tr>
 									<th></th>
-									<th class="px-2">Kills</th>
+									<th class="px-2 py-1">Kills</th>
 									<th class="px-2">Damage</th>
 									<th class="px-2">Tagged</th>
 								</tr>
 							</thead>
 							<tbody>
-								{#each selectedRound.damage.filter((x) => x.team === teamOne) as player}
-									<tr class="border-y px-2">
-										<td>{player.attacker_name}</td>
+								<tr class="border-y px-2">
+									<td colspan="4" class="py-1 pl-2 text-center">Team 1</td>
+								</tr>
+								{#each selectedRound.damage.filter((x) => x.team === teamOne) as player, i}
+									<tr
+										class="border-y px-2 transition-colors hover:cursor-pointer hover:bg-muted/50 data-[state=selected]:bg-muted"
+										onclick={() => (selectedPlayer = player)}
+									>
+										<td class="py-1 pl-2">{player.attacker_name}</td>
+										<td class="text-center"
+											>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td
+										>
+										<td class="text-center">
+											{player.damage_dealt.reduce((sum, entry) => sum + entry.damage, 0)}
+										</td>
+										<td class="text-center">
+											{new Set(
+												player.damage_dealt
+													.filter((entry) => entry.damage > 0)
+													.map((entry) => entry.defender)
+											).size}
+										</td>
+									</tr>
+								{/each}
+								<tr class="border-y px-2">
+									<td colspan="4" class="py-1 pl-2 text-center">Team 2</td>
+								</tr>
+								{#each selectedRound.damage.filter((x) => x.team === teamTwo) as player, i}
+									<tr
+										class="border-y px-2 transition-colors hover:cursor-pointer hover:bg-muted/50 data-[state=selected]:bg-muted"
+										onclick={() => (selectedPlayer = player)}
+									>
+										<td class="py-1 pl-2">{player.attacker_name}</td>
 										<td class="text-center"
 											>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td
 										>
@@ -205,6 +240,49 @@
 								{/each}
 							</tbody>
 						</table>
+					</div>
+					<div>
+						<div class="flex flex-col gap-2 rounded-md border p-2">
+							<div class="text-xl">{selectedPlayer.attacker_name}</div>
+							<div class="flex flex-col gap-2">
+								{#each selectedPlayer.damage_dealt as entry}
+									<div>{entry.defenderName}</div>
+									<div class="flex gap-8">
+										<div class="flex gap-2">
+											{#if entry.killed}
+												<div><Locate /></div>
+											{:else}
+												<div class="opacity-50"><LocateOff /></div>
+											{/if}
+											<div>{entry.damage}</div>
+										</div>
+										<div class="flex gap-1">
+											{#each Object.entries(entry.events.reduce((acc, event) => {
+													// Group by weapon
+													if (!acc[event.weapon]) {
+														acc[event.weapon] = { totalDamage: 0, count: 0 };
+													}
+													acc[event.weapon].totalDamage += event.dmg_health;
+													acc[event.weapon].count += 1;
+													return acc;
+												}, {})) as [weapon, stats]}
+												<div class="flex items-center gap-2">
+													<div class="flex items-center gap-1 rounded-sm border pr-1">
+														<img
+															src={`/weapons/weapon_${weapon}.svg`}
+															alt={weapon}
+															class="h-8 w-8"
+														/>
+														<span>{stats.totalDamage}</span>
+													</div>
+													<span>x {stats.count}</span>
+												</div>
+											{/each}
+										</div>
+									</div>
+								{/each}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

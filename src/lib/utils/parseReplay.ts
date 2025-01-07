@@ -43,11 +43,11 @@ const matchDates = [
 	},
 	{
 		id: "003724202544356917536_0887604486",
-		timestamp: 1765832432
+		timestamp: 1734300716
 	},
 	{
 		id: "003724374559944605913_0247441974",
-		timestamp: 1765789283
+		timestamp: 1734295632
 	}
 ]
 
@@ -55,13 +55,12 @@ export const parseReplay = (id: string) => {
 	const filePath = path.resolve(process.cwd(), `src/lib/demos/${id}.dem`).toString();
 
 	const gameEndTick = Math.max(...parseEvent(filePath, "round_end").map(x => x.tick))
-	console.log(parseTicks(filePath, ['match_start_time'], [gameEndTick]))
 
 	const fields = ["kills_total", "deaths_total", "mvps", "headshot_kills_total", "score", "assists_total", "alive_time_total", "damage_total", "enemies_flashed_total", "equipment_value_total", "utility_damage_total"]
 	const scoreboard = parseTicks(filePath, fields, [gameEndTick])
 
 	const playerInfo = parsePlayerInfo(filePath)
-	const lobbyInfo = { ...parseHeader(filePath), timestamp: matchDates.find(x => x.id === id)?.timestamp || Math.floor(Date.now() / 1000) }
+	const lobbyInfo = { ...parseHeader(filePath), id, timestamp: matchDates.find(x => x.id === id)?.timestamp || Math.floor(Date.now() / 1000) }
 	const damageEvents: DamageEvent[] = parseEvents(filePath, ['player_death', 'player_hurt'])
 
 	const roundTimers = parseEvents(filePath, ['round_prestart', 'cs_win_panel_match'])

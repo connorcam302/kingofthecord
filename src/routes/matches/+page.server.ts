@@ -1,3 +1,4 @@
+
 import { calculateHLTVRating, calculateImpact } from '$lib/utils';
 
 export const load = async ({ params }) => {

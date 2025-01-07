@@ -1,3 +1,4 @@
+
 import { calculateHLTVRating, calculateImpact } from '$lib/utils';
 
 export const load = async ({ params }) => {
@@ -93,8 +94,6 @@ export const load = async ({ params }) => {
 	})
 
 	return {
-		matchIds: await matchIds(),
-		matchData,
 		playerStats
 	};
 }

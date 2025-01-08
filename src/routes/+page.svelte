@@ -23,11 +23,11 @@
 	<title>King of the Cord</title>
 </svelte:head>
 
-<div class="mx-auto flex max-w-screen-xl flex-col gap-8 px-1">
+<div class="mx-auto flex max-w-screen-xl flex-col gap-8">
 	<div class="flex flex-col items-center justify-center gap-4">
 		<div class="text-center text-4xl">Leaderboard</div>
-		<div class="mx-auto flex max-w-screen-xl flex-col justify-center gap-4 px-1">
-			<div class="mx-auto w-fit rounded-xl border">
+		<div class="mx-auto flex max-w-screen-xl flex-col justify-center gap-4 px-2">
+			<div class="mx-auto w-fit overflow-hidden rounded-t-xl border text-sm md:text-base">
 				<table>
 					<thead>
 						<tr class="bg-slate-900">
@@ -45,7 +45,9 @@
 							{#if i !== playerStats.length - 1}
 								<tr class="transition-colors hover:bg-slate-900">
 									<td class="border-y border-r text-center md:px-2">{i + 1}</td>
-									<td class="border text-left md:px-2">{player.name}</td>
+									<td class="border text-left md:px-2"
+										><div class="w-32 truncate md:w-full">{player.name}</div></td
+									>
 									<td class="border text-center md:px-2">{player.mapStats.length}</td>
 									<td class="border text-center md:px-2"
 										>{(

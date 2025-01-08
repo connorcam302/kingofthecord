@@ -2,7 +2,8 @@
 	import { toast } from 'svelte-sonner';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import play from 'lucide-svelte/icons/play';
-	import { Ban } from 'lucide-svelte';
+	import { Ban, Check, SearchIcon } from 'lucide-svelte';
+	import { Input } from '$lib/components/ui/input/index.js';
 
 	let { data } = $props();
 
@@ -20,6 +21,19 @@
 
 	let team1 = $state([]);
 	let team2 = $state([]);
+
+	let searchText = $state('');
+	const filterPlayers = () => {
+		if (searchText !== '') {
+			console.log('filtering on:', searchText);
+			playerList = playerStats
+				.filter((player) => player.name.toLowerCase().includes(searchText.toLowerCase()))
+				.sort((a, b) => a.name.localeCompare(b.name));
+			console.log(playerList);
+		} else {
+			playerList = playerStats.sort((a, b) => a.name.localeCompare(b.name));
+		}
+	};
 
 	const updatePool = (player: any, action: string) => {
 		if (action === 'add') {
@@ -41,33 +55,71 @@
 	};
 
 	const makeTeams = () => {
+		team1 = [];
+		team2 = [];
+
 		if (pool.length < 10) {
 			toast('Could not make teams.', {
 				description: 'You must have 10 players in the pool.',
 				icon: Ban
 			});
+
+			return;
 		} else {
-			const playerPool = $derived(pool.slice().sort((a, b) => a.avg_hltvRating - b.avg_hltvRating));
+			const saltPool = (pool) => {
+				return pool.map((player) => {
+					// Generate a random salt within ±10% of avg_hltvRating
+					const salt = player.avg_hltvRating * (Math.random() * 0.2 - 0.1); // Random number between -10% and +10%
+					return {
+						...player,
+						salted_avg_hltvRating: player.avg_hltvRating + salt, // Add salt to avg_hltvRating
+						salt: salt // Store the exact salt value used
+					};
+				});
+			};
+
+			const playerPool = $derived(
+				saltPool(pool.slice()).sort((a, b) => b.salted_avg_hltvRating - a.salted_avg_hltvRating)
+			);
 			team1 = [playerPool[0]];
 			for (let i = 1; i < pool.length; i++) {
-				console.log('adding', playerPool[i]);
-				if (team1.length < 5) {
-					if (
-						team1.reduce((a, b) => a + b.avg_hltvRating, 0) <
-						team2.reduce((a, b) => a + b.avg_hltvRating, 0)
-					) {
-						console.log('adding to team 1');
-						team1.push(playerPool[i]);
-					} else {
-						console.log('adding to team 2');
-						team2.push(playerPool[i]);
-					}
+				if (i % 2 === 0) {
+					team1.push(playerPool[i]);
 				} else {
 					team2.push(playerPool[i]);
 				}
 			}
 		}
-		console.log(team1, team2);
+
+		for (let i = 0; i < team1.length; i++) {
+			for (let j = 0; j < team2.length; j++) {
+				const team1hltv = team1.reduce((a, b) => a + b.salted_avg_hltvRating, 0);
+				const team2hltv = team2.reduce((a, b) => a + b.salted_avg_hltvRating, 0);
+
+				const hltvDiff = Math.abs(team1hltv - team2hltv);
+
+				const player1 = team1[i];
+				const player2 = team2[j];
+
+				const team1Swap = [...team1.filter((x) => x !== player1), player2];
+				const team2Swap = [...team2.filter((x) => x !== player2), player1];
+
+				const team1SwapHltv = team1Swap.reduce((a, b) => a + b.salted_avg_hltvRating, 0);
+				const team2SwapHltv = team2Swap.reduce((a, b) => a + b.salted_avg_hltvRating, 0);
+
+				const swapHltvDiff = Math.abs(team1SwapHltv - team2SwapHltv);
+
+				if (swapHltvDiff < hltvDiff) {
+					team1[i] = player2;
+					team2[j] = player1;
+				}
+			}
+		}
+
+		toast('Could not make teams.', {
+			description: 'Teams were successfully generated.',
+			icon: Check
+		});
 	};
 </script>
 
@@ -76,8 +128,19 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center gap-4">
+	<div class="flex w-full grow items-center gap-2 text-xl">
+		<SearchIcon size={40} />
+		<div class="grow">
+			<Input
+				class="text-xl"
+				placeholder="Search..."
+				bind:value={searchText}
+				oninput={() => filterPlayers()}
+			/>
+		</div>
+	</div>
 	<div
-		class="flex w-full max-w-screen-sm flex-row items-center gap-2 overflow-auto rounded-xl border px-1 py-2"
+		class="flex w-full max-w-screen-sm grow flex-row items-center gap-2 overflow-auto rounded-xl border px-1 py-2"
 	>
 		{#each playerList as player}
 			<div class="flex items-center gap-2">

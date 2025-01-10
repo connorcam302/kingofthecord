@@ -76,3 +76,52 @@ export const calculateImpact = (playerStats) => {
 export const calculateSurvivalRate = (roundsSurvived, rounds) => {
 	return (roundsSurvived / rounds).toFixed(2);
 }
+
+export const getName = (player: { name: string; steamid: string; }) => {
+	const players = {
+		"76561198122107609": "Matthew",
+		"76561198254284578": "French",
+		"76561198042044970": "Lillie",
+		"76561198091576900": "Potto",
+		"76561198066770946": "Tom",
+		"76561198046884782": "Connor",
+		"76561198093204957": "Phil",
+		"76561198070288030": "Evan",
+		"76561198159005292": "Sam",
+		"76561198061148990": "Callum",
+		"76561198092288421": "Steve",
+		"76561198273647139": "Brock",
+		"76561198051802093": "Dan",
+		"76561198040636119": "Bingham",
+		"76561198061114587": "Liam"
+	}
+
+	if (players[player.steamid]) {
+		return players[player.steamid];
+	}
+
+	return player.name;
+}
+
+export const getNameById = (id: string) => {
+	const players = {
+		"76561198122107609": "Matthew",
+		"76561198254284578": "French",
+		"76561198042044970": "Lillie",
+		"76561198091576900": "Potto",
+		"76561198066770946": "Tom",
+		"76561198046884782": "Connor",
+		"76561198093204957": "Phil",
+		"76561198070288030": "Evan",
+		"76561198159005292": "Sam",
+		"76561198061148990": "Callum",
+		"76561198092288421": "Steve",
+		"76561198273647139": "Brock",
+		"76561198051802093": "Dan",
+		"76561198040636119": "Bingham",
+		"76561198061114587": "Liam"
+	}
+
+	return players[id] || false;
+}
+

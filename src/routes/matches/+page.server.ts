@@ -1,4 +1,5 @@
 
+import { fetchMatches } from '$lib/server/privateUtils';
 import { calculateHLTVRating, calculateImpact } from '$lib/utils';
 
 export const load = async ({ params }) => {
@@ -7,27 +8,14 @@ export const load = async ({ params }) => {
 		return matchIds.default;
 	}
 
-	const fetchMatches = async () => {
-		const matchIdArray = await matchIds();
-
-		const matches = [];
-		for (const matchId of matchIdArray) {
-			const match = await import(`$lib/server/matches/${matchId}.json`);
-			matches.push(match.default);
-		}
-		return matches;
-	}
-
 	const matchData = await fetchMatches();
 
 	// Function to extract unique players with their steamid
 	const getUniquePlayers = (games) => {
 		const uniquePlayers = {};
 
-		console.log(games.length)
 
 		games.forEach(game => {
-			console.log(game)
 			game.forEach(player => {
 				// Add the player to the object using steamid as the key to ensure uniqueness
 				if (!uniquePlayers[player.steamid]) {

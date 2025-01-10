@@ -1,4 +1,5 @@
-import { calculateHLTVRating, calculateImpact } from '$lib/utils';
+import { fetchMatches } from '$lib/server/privateUtils';
+import { calculateHLTVRating, calculateImpact, getName } from '$lib/utils';
 
 export const load = async ({ params }) => {
 	const matchIds = async () => {
@@ -6,32 +7,20 @@ export const load = async ({ params }) => {
 		return matchIds.default;
 	}
 
-	const fetchMatches = async () => {
-		const matchIdArray = await matchIds();
+	const matchData = await fetchMatches(await matchIds());
 
-		const matches = [];
-		for (const matchId of matchIdArray) {
-			const match = await import(`$lib/server/matches/${matchId}.json`);
-			matches.push(match.default);
-		}
-		return matches;
-	}
-
-	const matchData = await fetchMatches();
 
 	// Function to extract unique players with their steamid
 	const getUniquePlayers = (games) => {
 		const uniquePlayers = {};
 
-		console.log(games.length)
 
 		games.forEach(game => {
-			console.log(game)
 			game.forEach(player => {
 				// Add the player to the object using steamid as the key to ensure uniqueness
 				if (!uniquePlayers[player.steamid]) {
 					uniquePlayers[player.steamid] = {
-						name: player.name,
+						name: getName(player),
 						steamid: player.steamid
 					};
 				}
@@ -42,8 +31,21 @@ export const load = async ({ params }) => {
 		return Object.values(uniquePlayers);
 	}
 
+	const removeBestAndWorstTenPercent = (array) => {
+		if (array.length < 10) {
+			return array;
+		} else {
+			const removeCount = Math.floor(array.length * 0.1);
+			return array.slice(removeCount, -1 * removeCount)
+		};
+	}
+
+	const calculateAvgHLTVRating = (array) => {
+		return removeBestAndWorstTenPercent(array.sort((a, b) => b.hltvRating - a.hltvRating)).reduce((total, stat) => total + stat.hltvRating, 0) / removeBestAndWorstTenPercent(array).length
+	}
+
 	const playerStats = []
-	const playerList = getUniquePlayers(await fetchMatches().then(matches => matches.map(match => match.playerStats))).filter(player => !["76561198269258902", "76561198979060238"].includes(player.steamid));
+	const playerList = getUniquePlayers(await fetchMatches().then(matches => matches.map(match => match.playerStats))).filter(player => !["76561198269258902", "76561198979060238", "76561198413151187"].includes(player.steamid));
 
 	playerList.forEach(player => {
 		const mapStats = []
@@ -68,14 +70,13 @@ export const load = async ({ params }) => {
 
 				const rawHltv = { kpr, dpr, apr, impact, adr, survivalRate }
 
-
 				const hltvRating = calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate)
-				mapStats.push({ ...playerMatchData, rawHltv, hltvRating, isWinningTeam, hltvRatingRaw: { kpr, dpr, apr, impact, adr, survivalRate, rounds: match.playerStats.length } })
+				mapStats.push({ ...playerMatchData, rawHltv, hltvRating, isWinningTeam, hltvRatingRaw: { kpr, dpr, apr, impact, adr, survivalRate, rounds: match.playerStats.length }, timestamp: match.lobbyInfo.timestamp })
 			}
 		})
 
 		playerStats.push({
-			mapStats,
+			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
 			...player,
 			rawHltv: {
 				kpr: mapStats.reduce((total, stat) => total + stat.rawHltv.kpr, 0) / mapStats.length,
@@ -88,7 +89,10 @@ export const load = async ({ params }) => {
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
-			avg_hltvRating: mapStats.reduce((total, stat) => total + stat.hltvRating, 0) / mapStats.length
+			avg_hltvRating: calculateAvgHLTVRating(mapStats),
+			old_avg_hltvRating: calculateAvgHLTVRating(mapStats.sort((a, b) => b.timestamp - a.timestamp).slice(0, -1)),
+			hltv_ratings: removeBestAndWorstTenPercent(mapStats).map(stat => stat.hltvRating).sort((a, b) => b - a),
+			all_hltv_ratings: mapStats.map(stat => stat.hltvRating).sort((a, b) => b - a)
 		})
 	})
 

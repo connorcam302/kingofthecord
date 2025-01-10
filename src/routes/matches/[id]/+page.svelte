@@ -2,7 +2,7 @@
 	import DataTable from './data-table.svelte';
 	import { basicColumns, advancedColumns } from './columns.js';
 	import { Button } from '$lib/components/ui/button';
-	import { getMapString } from '$lib/utils';
+	import { getMapString, getNameById } from '$lib/utils';
 	import dayjs from 'dayjs';
 	import { LocateOff, Locate, ChevronUpIcon, ChevronDownIcon, Crosshair } from 'lucide-svelte';
 	import tippy from 'sveltejs-tippy';
@@ -34,6 +34,8 @@
 
 	let duelPlayer1 = $state(matchData.playerStats[0]);
 	let duelPlayer2 = $state(matchData.playerStats.filter((x: any) => x.team_number !== teamOne)[0]);
+
+	console.log(data);
 </script>
 
 <svelte:head>
@@ -217,7 +219,9 @@
 										selectedTimeline = selectedPlayer.damage_dealt[0];
 									}}
 								>
-									<td class="py-1 pl-2">{player.attacker_name}</td>
+									<td class="py-1 pl-2"
+										>{getNameById(player.attacker_steamid) || player.attacker_name}
+									</td>
 									<td class="text-center"
 										>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td
 									>
@@ -240,7 +244,9 @@
 										selectedTimeline = selectedPlayer.damage_dealt[0];
 									}}
 								>
-									<td class="py-1 pl-2">{player.attacker_name}</td>
+									<td class="py-1 pl-2"
+										>{getNameById(player.attacker_steamid) || player.attacker_name}</td
+									>
 									<td class="text-center"
 										>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td
 									>
@@ -269,7 +275,9 @@
 										selectedTimeline = selectedPlayer.damage_dealt[0];
 									}}
 								>
-									<td class="py-1 pl-2">{player.attacker_name}</td>
+									<td class="py-1 pl-2"
+										>{getNameById(player.attacker_steamid) || player.attacker_name}</td
+									>
 									<td class="text-center"
 										>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td
 									>
@@ -292,7 +300,9 @@
 										selectedTimeline = selectedPlayer.damage_dealt[0];
 									}}
 								>
-									<td class="py-1 pl-2">{player.attacker_name}</td>
+									<td class="w-40 py-1 pl-2"
+										>{getNameById(player.attacker_steamid) || player.attacker_name}</td
+									>
 									<td class="text-center"
 										>{player.damage_dealt.filter((entry) => entry.killed === true).length}</td
 									>
@@ -324,7 +334,7 @@
 								>
 									<div class="flex h-24 flex-col items-start gap-2">
 										<div class="flex justify-between">
-											<div>{entry.defenderName}</div>
+											<div>{getNameById(entry.defender) || entry.defenderName}</div>
 										</div>
 										<div class="flex gap-2">
 											{#if entry.killed}
@@ -390,7 +400,7 @@
 								>
 									<div class="flex h-24 flex-col items-start gap-2">
 										<div class="flex justify-between">
-											<div>{entry.defenderName}</div>
+											<div>{getNameById(entry.defender) || entry.defenderName}</div>
 										</div>
 										<div class="flex gap-2">
 											{#if entry.killed}
@@ -458,7 +468,9 @@
 		<div class="flex flex-col gap-2 rounded-md border p-1 md:p-4">
 			<div class="flex flex-wrap justify-between">
 				<div class="flex w-full flex-col gap-2 md:w-[45%]">
-					<div class="text-lg">{selectedTimeline.defenderName}</div>
+					<div class="text-lg">
+						{getNameById(selectedTimeline.defender) || selectedTimeline.defenderName}
+					</div>
 					{#if selectedTimeline.events.length > 0}
 						<div class="flex gap-2">
 							{#if selectedTimeline.events[selectedTimeline.events.length - 1].event_name !== 'player_death'}
@@ -570,7 +582,9 @@
 					{/if}
 				</div>
 				<div class="flex w-full flex-col gap-2 md:w-[45%]">
-					<div class="text-right text-lg">{selectedPlayer.attacker_name}</div>
+					<div class="text-right text-lg">
+						{getNameById(selectedPlayer.attacker_steamid) || selectedPlayer.attacker_name}
+					</div>
 					{#if selectedRound.damage
 						.find((x) => x.attacker_name === selectedTimeline.defenderName)
 						?.damage_dealt.find((x) => x.defender === selectedPlayer.attacker_steamid)?.events?.length > 0}

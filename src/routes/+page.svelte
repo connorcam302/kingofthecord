@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import dayjs from 'dayjs';
 	import { getMapString } from '$lib/utils';
+	import { ChevronDown, ChevronDownIcon, ChevronUp, Minus, MinusIcon } from 'lucide-svelte';
+	import tippy from 'sveltejs-tippy';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
@@ -44,9 +46,26 @@
 						{#each playerStats.sort((a, b) => b.avg_hltvRating - a.avg_hltvRating) as player, i}
 							{#if i !== playerStats.length - 1}
 								<tr class="transition-colors hover:bg-slate-900">
-									<td class="border-y border-r text-center md:px-2">{i + 1}</td>
+									<td class="border-y border-r text-center md:px-2">
+										<div class="flex items-center justify-between gap-1">
+											{#if playerStats
+												.slice()
+												.sort((a, b) => b.old_avg_hltvRating - a.old_avg_hltvRating)
+												.findIndex((p) => p.steamid === player.steamid) > i}
+												<div class="text-green-500"><ChevronUp /></div>
+											{:else if playerStats
+												.slice()
+												.sort((a, b) => b.old_avg_hltvRating - a.old_avg_hltvRating)
+												.findIndex((p) => p.steamid === player.steamid) < i}
+												<div class="text-red-500"><ChevronDown /></div>
+											{:else}
+												<div><Minus /></div>
+											{/if}
+											<div>{i + 1}</div>
+										</div>
+									</td>
 									<td class="border text-left md:px-2"
-										><div class="w-32 truncate md:w-full">{player.name}</div></td
+										><div class="w-32 truncate">{player.name}</div></td
 									>
 									<td class="border text-center md:px-2">{player.mapStats.length}</td>
 									<td class="border text-center md:px-2"
@@ -59,13 +78,37 @@
 									<td class="border text-center md:px-2"
 										>{(player.kills / player.deaths).toFixed(2)}</td
 									>
-									<td class="border-y border-l text-center md:px-2"
-										>{player.avg_hltvRating.toFixed(2)}</td
+									<td
+										class="border-y border-l text-center md:px-2"
+										use:tippy={{
+											content:
+												(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2) >= 0
+													? `<div class='text-green-500'>+${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`
+													: `<div class='text-red-500'>${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`,
+											allowHTML: true
+										}}>{player.avg_hltvRating.toFixed(2)}</td
 									>
 								</tr>
 							{:else}
 								<tr class="transition-colors hover:bg-slate-900">
-									<td class="border-r border-t text-center md:px-2">{i + 1}</td>
+									<td class="border-r border-t text-center md:px-2"
+										><div class="flex items-center justify-between gap-1">
+											{#if playerStats
+												.slice()
+												.sort((a, b) => b.old_avg_hltvRating - a.old_avg_hltvRating)
+												.findIndex((p) => p.steamid === player.steamid) > i}
+												<div class="text-green-500"><ChevronUp /></div>
+											{:else if playerStats
+												.slice()
+												.sort((a, b) => b.old_avg_hltvRating - a.old_avg_hltvRating)
+												.findIndex((p) => p.steamid === player.steamid) < i}
+												<div class="text-red-500"><ChevronDown /></div>
+											{:else}
+												<div><Minus /></div>
+											{/if}
+											<div>{i + 1}</div>
+										</div></td
+									>
 									<td class="border-r border-t text-left md:px-2">{player.name}</td>
 									<td class="border-r border-t text-center md:px-2">{player.mapStats.length}</td>
 									<td class="border-r border-t text-center md:px-2"
@@ -80,7 +123,16 @@
 									<td class="border-r border-t text-center md:px-2"
 										>{(player.kills / player.deaths).toFixed(2)}</td
 									>
-									<td class="border-t text-center md:px-2">{player.avg_hltvRating.toFixed(2)}</td>
+									<td
+										class="border-t text-center md:px-2"
+										use:tippy={{
+											content:
+												(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2) >= 0
+													? `<div class='text-green-500'>+${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`
+													: `<div class='text-red-500'>${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`,
+											allowHTML: true
+										}}>{player.avg_hltvRating.toFixed(2)}</td
+									>
 								</tr>
 							{/if}
 						{/each}

@@ -3,25 +3,25 @@ import SortableHeader from "./SortableHeader.svelte";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 /*{
-    "name": "2colfox",
-    "steamid": "76561198046884782",
-    "team_number": 2,
-    "oneK": 15,
-    "twoK": 7,
-    "threeK": 1,
-    "fourK": 0,
-    "fiveK": 0,
-    "alive_time_total": 596,
-    "assists_total": 9,
-    "damage_total": 2571,
-    "deaths_total": 15,
-    "enemies_flashed_total": 5,
-    "headshot_kills_total": 12,
-    "kills_total": 23,
-    "mvps": 2,
-    "score": 59,
-    "tick": 138258,
-    "utility_damage_total": 218
+	"name": "2colfox",
+	"steamid": "76561198046884782",
+	"team_number": 2,
+	"oneK": 15,
+	"twoK": 7,
+	"threeK": 1,
+	"fourK": 0,
+	"fiveK": 0,
+	"alive_time_total": 596,
+	"assists_total": 9,
+	"damage_total": 2571,
+	"deaths_total": 15,
+	"enemies_flashed_total": 5,
+	"headshot_kills_total": 12,
+	"kills_total": 23,
+	"mvps": 2,
+	"score": 59,
+	"tick": 138258,
+	"utility_damage_total": 218
 }*/
 
 export type BasicTeamData = {
@@ -121,6 +121,14 @@ export const basicColumns: ColumnDef<BasicTeamData>[] = [
 				column,
 			}),
 	},
+	{
+		accessorKey: "hltvRating",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Rating",
+				column,
+			}),
+	}
 ];
 export const advancedColumns: ColumnDef<AdvancedTeamData>[] = [
 	{

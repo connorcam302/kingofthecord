@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DataTable from './data-table.svelte';
-	import { basicColumns, advancedColumns } from './columns.js';
+	import { basicColumns, advancedColumns, ratingColumns } from './columns.js';
 	import { Button } from '$lib/components/ui/button';
 	import { getMapString, getNameById } from '$lib/utils';
 	import dayjs from 'dayjs';
@@ -35,7 +35,7 @@
 	let duelPlayer1 = $state(matchData.playerStats[0]);
 	let duelPlayer2 = $state(matchData.playerStats.filter((x: any) => x.team_number !== teamOne)[0]);
 
-	//console.log(data);
+	console.log(data);
 </script>
 
 <svelte:head>
@@ -79,6 +79,10 @@
 					variant={firstTab === 'advanced' ? 'secondary' : 'outline'}
 					onclick={() => (firstTab = 'advanced')}>Advanced</Button
 				>
+				<Button
+					variant={firstTab === 'advanced' ? 'secondary' : 'outline'}
+					onclick={() => (firstTab = 'rating')}>Rating</Button
+				>
 			</div>
 			{#await matchData}
 				<p>...Waiting</p>
@@ -109,6 +113,31 @@
 						<DataTable
 							data={matchData.playerStats.filter((x) => x.team_number === teamTwo)}
 							columns={advancedColumns}
+						/>
+					</div>
+				{:else if firstTab === 'rating'}
+					<div class="flex flex-col gap-2">
+						<DataTable
+							data={matchData.playerStats
+								.filter((x) => x.team_number === teamOne)
+								.map((x) => {
+									return {
+										...x,
+										...x.rawHLTVRating
+									};
+								})}
+							columns={ratingColumns}
+						/>
+						<DataTable
+							data={matchData.playerStats
+								.filter((x) => x.team_number === teamTwo)
+								.map((x) => {
+									return {
+										...x,
+										...x.rawHLTVRating
+									};
+								})}
+							columns={ratingColumns}
 						/>
 					</div>
 				{/if}

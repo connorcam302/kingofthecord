@@ -35,13 +35,18 @@ export const load = async ({ params }) => {
 		if (array.length < 10) {
 			return array;
 		} else {
+			array = array.sort((a, b) => b.hltvRating - a.hltvRating)
 			const removeCount = Math.floor(array.length * 0.1);
+			const newArray = array.slice(removeCount, -1 * removeCount)
 			return array.slice(removeCount, -1 * removeCount)
 		};
 	}
 
 	const calculateAvgHLTVRating = (array) => {
-		return removeBestAndWorstTenPercent(array.sort((a, b) => b.hltvRating - a.hltvRating)).reduce((total, stat) => total + stat.hltvRating, 0) / removeBestAndWorstTenPercent(array).length
+		array = array.sort((a, b) => b.hltvRating - a.hltvRating)
+		console.log(array.map(stat => stat.hltvRating))
+		console.log(removeBestAndWorstTenPercent(array).map(stat => stat.hltvRating))
+		return removeBestAndWorstTenPercent(array).reduce((total, stat) => total + stat.hltvRating, 0) / removeBestAndWorstTenPercent(array).length
 	}
 
 	const playerStats = []
@@ -75,6 +80,14 @@ export const load = async ({ params }) => {
 			}
 		})
 
+		console.log(player.name)
+
+		const allHltvRatings = mapStats.map(stat => stat.hltvRating).sort((a, b) => b - a)
+		// get hltv rating without the most recent game, most recent is the game with the highest timestamp
+		const oldHltvRatings = removeBestAndWorstTenPercent(mapStats.slice().sort((a, b) => a.timestamp - b.timestamp).slice(0, -1)).map(stat => stat.hltvRating).sort((a, b) => b - a)
+
+		const hltvRatings = removeBestAndWorstTenPercent(mapStats).map(stat => stat.hltvRating).sort((a, b) => b - a)
+
 		playerStats.push({
 			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
 			...player,
@@ -89,10 +102,11 @@ export const load = async ({ params }) => {
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
-			avg_hltvRating: calculateAvgHLTVRating(mapStats),
-			old_avg_hltvRating: calculateAvgHLTVRating(mapStats.sort((a, b) => b.timestamp - a.timestamp).slice(0, -1)),
-			hltv_ratings: removeBestAndWorstTenPercent(mapStats).map(stat => stat.hltvRating).sort((a, b) => b - a),
-			all_hltv_ratings: mapStats.map(stat => stat.hltvRating).sort((a, b) => b - a)
+			avg_hltvRating: hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length,
+			old_avg_hltvRating: oldHltvRatings.reduce((total, stat) => total + stat, 0) / oldHltvRatings.length,
+			old_hltv_ratings: oldHltvRatings,
+			hltv_ratings: hltvRatings,
+			all_hltv_ratings: allHltvRatings
 		})
 	})
 

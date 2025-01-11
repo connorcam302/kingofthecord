@@ -49,6 +49,16 @@ export type AdvancedTeamData = {
 	utility_damage_total: number;
 }
 
+export type RatingTeamData = {
+	name: string;
+	killsPerRound: number;
+	deathsPerRound: number;
+	assistsPerRound: number;
+	impact: number;
+	adr: number;
+	survivalRate: number;
+}
+
 export const basicColumns: ColumnDef<BasicTeamData>[] = [
 	{
 		accessorKey: "name",
@@ -228,6 +238,84 @@ export const advancedColumns: ColumnDef<AdvancedTeamData>[] = [
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
 				label: "Score",
+				column,
+			}),
+	}
+]
+
+export const ratingColumns: ColumnDef<RatingTeamData>[] = [
+	{
+		accessorKey: "name",
+		header: "Name",
+		cell: ({ row }) => {
+
+			const nameCellSnippet = createRawSnippet<[string]>((getName) => {
+				const name = getName();
+				return {
+					render: () => `<div class="text-left font-bold">${name}</div>`,
+				};
+			});
+
+			return renderSnippet(
+				nameCellSnippet,
+				row.getValue('name')
+			);
+		}
+
+	},
+	{
+		accessorKey: "kpr",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "KPR",
+				column,
+			}),
+	},
+	{
+		accessorKey: "dpr",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "DPR",
+				column,
+			}),
+	},
+	{
+		accessorKey: "apr",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "APR",
+				column,
+			}),
+	},
+	{
+		accessorKey: "adr",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "ADR",
+				column,
+			}),
+	},
+	{
+		accessorKey: "impact",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Impact",
+				column,
+			}),
+	},
+	{
+		accessorKey: "survivalRate",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Survival Rate",
+				column,
+			}),
+	},
+	{
+		accessorKey: "hltvRating",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Rating",
 				column,
 			}),
 	}

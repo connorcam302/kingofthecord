@@ -3,7 +3,6 @@ import { calculateADR, calculateHLTVRating, calculateImpact, calculateSurvivalRa
 export const load = async ({ params }) => {
 	const matchData = import(`$lib/server/matches/${params.id}.json`).then(data => data.default).then(data => {
 		const rounds = data.rounds.length
-		console.log(Object.values(data.playerStats))
 		return {
 			...data,
 			playerStats: data.playerStats.map(playerStat => {

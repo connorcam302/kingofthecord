@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import play from 'lucide-svelte/icons/play';
 	import { Ban, Check, SearchIcon } from 'lucide-svelte';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 
 	let { data } = $props();
 
 	const { playerStats } = data;
 
 	let playerList = $state(playerStats.sort((a, b) => a.name.localeCompare(b.name)));
+	let extraPlayers = $state([]);
 
 	let pool = $derived(
 		playerStats
@@ -21,6 +24,15 @@
 
 	let team1 = $state([]);
 	let team2 = $state([]);
+
+	let open = false;
+	let newPlayerName = $state('');
+	let newPlayerRating = $state();
+
+	const addPlayer = (name: string, rating: number) => {
+		console.log(name, rating);
+		extraPlayers = [...extraPlayers, { name: name, avg_hltvRating: rating }];
+	};
 
 	let searchText = $state('');
 	const filterPlayers = () => {
@@ -121,6 +133,12 @@
 			icon: Check
 		});
 	};
+
+	$effect(() => {
+		console.log(pool);
+		console.log(playerList);
+		console.log(extraPlayers);
+	});
 </script>
 
 <svelte:head>
@@ -139,16 +157,21 @@
 			/>
 		</div>
 	</div>
-	<div
-		class="flex w-full max-w-screen-sm grow flex-row items-center gap-2 overflow-auto rounded-xl border px-1 py-2"
-	>
-		{#each playerList as player}
-			<div class="flex items-center gap-2">
-				<Button variant="outline" class="text-xl" onclick={() => updatePool(player, 'add')}
-					>{player.name}</Button
-				>
-			</div>
-		{/each}
+	<div class="flex gap-2">
+		<div
+			class="flex w-full max-w-screen-sm grow flex-row items-center gap-2 overflow-auto rounded-xl border px-1 py-2"
+		>
+			{#each playerList as player}
+				<div class="flex items-center gap-2">
+					<Button variant="outline" class="text-xl" onclick={() => updatePool(player, 'add')}
+						>{player.name}</Button
+					>
+				</div>
+			{/each}
+		</div>
+		<div>
+			<Button variant="outline" class="h-full rounded-lg border text-lg">Create Player</Button>
+		</div>
 	</div>
 	<div class="grid h-64 grid-cols-2 gap-2">
 		{#each pool as player}
@@ -202,3 +225,29 @@
 		</div>
 	{/if}
 </div>
+
+<Drawer.Root bind:open>
+	<Drawer.Trigger class={buttonVariants({ variant: 'outline' })}>Edit Profile</Drawer.Trigger>
+	<Drawer.Content>
+		<Drawer.Header class="text-left">
+			<Drawer.Title>Create Player</Drawer.Title>
+			<Drawer.Description>Manually Create a Player by name and Rating.</Drawer.Description>
+		</Drawer.Header>
+		<form class="grid items-start gap-4 px-4">
+			<div class="grid gap-2">
+				<Label for="name">Name</Label>
+				<Input type="text" id="name" placeholder="Name" bind:value={newPlayerName} />
+			</div>
+			<div class="grid gap-2">
+				<Label for="rating">Rating</Label>
+				<Input id="rating" type="number" placeholder="0-5" bind:value={newPlayerRating} />
+			</div>
+			<Button type="submit" onclick={() => addPlayer(newPlayerName, newPlayerRating)}
+				>Add Player</Button
+			>
+		</form>
+		<Drawer.Footer class="pt-2">
+			<Drawer.Close class={buttonVariants({ variant: 'outline' })}>Cancel</Drawer.Close>
+		</Drawer.Footer>
+	</Drawer.Content>
+</Drawer.Root>

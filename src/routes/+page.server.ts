@@ -50,7 +50,7 @@ export const load = async ({ params }) => {
 	}
 
 	const playerStats = []
-	const playerList = getUniquePlayers(await fetchMatches().then(matches => matches.map(match => match.playerStats))).filter(player => !["76561198269258902", "76561198979060238", "76561198413151187"].includes(player.steamid));
+	const playerList = getUniquePlayers(await fetchMatches().then(matches => matches.map(match => match.playerStats))).filter(player => !["76561198413151187"].includes(player.steamid));
 
 	playerList.forEach(player => {
 		const mapStats = []

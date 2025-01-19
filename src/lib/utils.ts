@@ -80,7 +80,7 @@ export const calculateSurvivalRate = (roundsSurvived, rounds) => {
 export const getName = (player: { name: string; steamid: string; }) => {
 	const players = {
 		"76561198122107609": "Matthew",
-		"76561198254284578": "French",
+		"76561198254284578": "Frenchy",
 		"76561198042044970": "Lillie",
 		"76561198091576900": "Potto",
 		"76561198066770946": "Tom",
@@ -93,7 +93,8 @@ export const getName = (player: { name: string; steamid: string; }) => {
 		"76561198273647139": "Brock",
 		"76561198051802093": "Dan",
 		"76561198040636119": "Bingham",
-		"76561198061114587": "Liam"
+		"76561198061114587": "Liam",
+		"76561198114107073": "Pona"
 	}
 
 	if (players[player.steamid]) {
@@ -106,7 +107,7 @@ export const getName = (player: { name: string; steamid: string; }) => {
 export const getNameById = (id: string) => {
 	const players = {
 		"76561198122107609": "Matthew",
-		"76561198254284578": "French",
+		"76561198254284578": "Frenchy",
 		"76561198042044970": "Lillie",
 		"76561198091576900": "Potto",
 		"76561198066770946": "Tom",

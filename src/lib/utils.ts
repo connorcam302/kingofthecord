@@ -119,7 +119,8 @@ export const getNameById = (id: string) => {
 		"76561198273647139": "Brock",
 		"76561198051802093": "Dan",
 		"76561198040636119": "Bingham",
-		"76561198061114587": "Liam"
+		"76561198061114587": "Liam",
+		"76561198114107073": "Pona"
 	}
 
 	return players[id] || false;

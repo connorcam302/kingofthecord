@@ -1,5 +1,6 @@
+
 import { fetchMatches } from '$lib/server/privateUtils';
-import { calculateHLTVRating, calculateImpact, getName } from '$lib/utils';
+import { calculateHLTVRating, calculateImpact, getMapString, getName } from '$lib/utils';
 
 export const load = async ({ params }) => {
 	const matchIds = async () => {
@@ -75,12 +76,14 @@ export const load = async ({ params }) => {
 
 				const rawHltv = { kpr, dpr, apr, impact, adr, survivalRate }
 
+				const winner = match.rounds[match.rounds.length - 1].teamOneScore > match.rounds[match.rounds.length - 1].teamTwoScore ? 2 : 3
+
+				const didPlayerWin = playerTeam === winner
+
 				const hltvRating = calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate)
-				mapStats.push({ ...playerMatchData, rawHltv, hltvRating, isWinningTeam, hltvRatingRaw: { kpr, dpr, apr, impact, adr, survivalRate, rounds: match.playerStats.length }, timestamp: match.lobbyInfo.timestamp })
+				mapStats.push({ ...playerMatchData, rawHltv, hltvRating, isWinningTeam, hltvRatingRaw: { kpr, dpr, apr, impact, adr, survivalRate, rounds: match.playerStats.length }, timestamp: match.lobbyInfo.timestamp, matchId: match.lobbyInfo.id, map: match.lobbyInfo.map_name, didPlayerWin, rounds: match.rounds.length, teamOneScore: match.rounds[match.rounds.length - 1].teamOneScore, teamTwoScore: match.rounds[match.rounds.length - 1].teamTwoScore })
 			}
 		})
-
-		console.log(player.name)
 
 		const allHltvRatings = mapStats.map(stat => stat.hltvRating).sort((a, b) => b - a)
 		// get hltv rating without the most recent game, most recent is the game with the highest timestamp
@@ -90,12 +93,6 @@ export const load = async ({ params }) => {
 				? currentObj
 				: maxObj;
 		}).playerStats.filter(playerStat => playerStat.steamid === player.steamid).length > 0
-
-		console.log(matchData.reduce((maxObj, currentObj) => {
-			return currentObj.lobbyInfo.timestamp > maxObj.lobbyInfo.timestamp
-				? currentObj
-				: maxObj;
-		}).playerStats.filter(playerStat => playerStat.steamid === player.steamid).length)
 
 		let oldHltvRatings;
 		if (playerInMostRecent) {
@@ -129,9 +126,54 @@ export const load = async ({ params }) => {
 		})
 	})
 
+	const hltvTimeline = []
+	const tempTimeline = []
+	playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.reverse().forEach(stat => {
+		tempTimeline.push({
+			hltvRating: stat.hltvRating,
+			timestamp: stat.timestamp,
+			matchId: stat.matchId,
+			kills: stat.kills_total,
+			deaths: stat.deaths_total,
+			assists: stat.assists_total,
+			adr: stat.rawHltv.adr
+		})
+		hltvTimeline.push({
+			rating: calculateAvgHLTVRating(tempTimeline),
+			currentMatch: {
+				hltvRating: stat.hltvRating,
+				timestamp: stat.timestamp,
+				matchId: stat.matchId,
+				kills: stat.kills_total,
+				deaths: stat.deaths_total,
+				assists: stat.assists_total,
+				adr: stat.rawHltv.adr
+			}
+		})
+	})
+
+	const maps = Array.from(new Set(playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.map((x) => x.map))).sort()
+
+	const mapStats = []
+	maps.forEach((map) => {
+		const wins = playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map && x.didPlayerWin).length
+		const matchesPlayed = playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).length
+		mapStats.push({
+			name: getMapString(map),
+			matches: playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).length,
+			winRate: ((wins / matchesPlayed) * 100).toFixed(0) + " %",
+			avgKills: (playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).reduce((total, stat) => total + stat.kills_total, 0) / matchesPlayed).toFixed(1),
+			avgDeaths: (playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).reduce((total, stat) => total + stat.deaths_total, 0) / matchesPlayed).toFixed(1),
+			avgAssists: (playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).reduce((total, stat) => total + stat.assists_total, 0) / matchesPlayed).toFixed(1),
+			avgAdr: (playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).reduce((total, stat) => total + stat.rawHltv.adr, 0) / matchesPlayed).toFixed(0),
+			avgRating: (playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.filter((x) => x.map === map).reduce((total, stat) => total + stat.hltvRating, 0) / matchesPlayed).toFixed(2)
+		})
+	})
+
 	return {
-		matchIds: await matchIds(),
-		matchData,
-		playerStats
-	};
+		hltvTimeline: hltvTimeline,
+		stats: playerStats.find(playerStat => playerStat.steamid === params.playerId),
+		maps: mapStats
+	}
 }
+

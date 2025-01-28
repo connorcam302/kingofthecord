@@ -16,7 +16,7 @@ export const load = async ({ params }) => {
 
 				return {
 					...playerStat,
-					rawHLTVRating: { kpr, dpr, apr, impact, adr, survivalRate },
+					rawHLTVRating: { kpr: kpr.toFixed(2), dpr: dpr.toFixed(2), apr: apr.toFixed(2), impact, adr: adr.toFixed(2), survivalRate: survivalRate.toFixed(2) },
 					hltvRating: calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate)
 				}
 			}).sort((a, b) => b.hltvRating - a.hltvRating)

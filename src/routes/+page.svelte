@@ -65,7 +65,14 @@
 										</div>
 									</td>
 									<td class="border text-left md:px-2"
-										><div class="w-32 truncate">{player.name}</div></td
+										><div class="w-32 truncate">
+											<button
+												onclick={() => goto(`/players/${player.steamid}`)}
+												class="duration-200 hover:opacity-50"
+											>
+												{player.name}</button
+											>
+										</div></td
 									>
 									<td class="border text-center md:px-2">{player.mapStats.length}</td>
 									<td class="border text-center md:px-2"
@@ -82,9 +89,9 @@
 										class="border-y border-l text-center md:px-2"
 										use:tippy={{
 											content:
-												(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2) >= 0
-													? `<div class='text-green-500'>+${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`
-													: `<div class='text-red-500'>${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`,
+												player.ratingChange.toFixed(2) >= 0
+													? `<div class='text-green-500'>+${player.ratingChange.toFixed(2)}</div>`
+													: `<div class='text-red-500'>${player.ratingChange.toFixed(2)}</div>`,
 											allowHTML: true
 										}}>{player.avg_hltvRating.toFixed(2)}</td
 									>
@@ -109,7 +116,14 @@
 											<div>{i + 1}</div>
 										</div></td
 									>
-									<td class="border-r border-t text-left md:px-2">{player.name}</td>
+									<td class="border-r border-t text-left md:px-2"
+										><button
+											onclick={() => goto(`/players/${player.steamid}`)}
+											class="duration-200 hover:opacity-50"
+										>
+											{player.name}</button
+										></td
+									>
 									<td class="border-r border-t text-center md:px-2">{player.mapStats.length}</td>
 									<td class="border-r border-t text-center md:px-2"
 										>{(
@@ -127,9 +141,9 @@
 										class="border-t text-center md:px-2"
 										use:tippy={{
 											content:
-												(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2) >= 0
-													? `<div class='text-green-500'>+${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`
-													: `<div class='text-red-500'>${(player.avg_hltvRating - player.old_avg_hltvRating).toFixed(2)}</div>`,
+												player.ratingChange.toFixed(2) >= 0
+													? `<div class='text-green-500'>+${player.ratingChange.toFixed(2)}</div>`
+													: `<div class='text-red-500'>${player.ratingChange.toFixed(2)}</div>`,
 											allowHTML: true
 										}}>{player.avg_hltvRating.toFixed(2)}</td
 									>

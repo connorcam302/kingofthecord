@@ -87,60 +87,62 @@
 			{#await matchData}
 				<p>...Waiting</p>
 			{:then matchData}
-				{#if firstTab === 'basic'}
-					<div class="flex flex-col gap-4">
+				<div class="w-96 overflow-auto md:w-full">
+					{#if firstTab === 'basic'}
+						<div class="flex flex-col gap-4">
+							<div class="flex flex-col gap-2">
+								<div class="text-lg">Team 1</div>
+								<DataTable
+									data={matchData.playerStats.filter((x) => x.team_number === teamOne)}
+									columns={basicColumns}
+								/>
+							</div>
+							<div class="flex flex-col gap-2">
+								<div>Team 2</div>
+								<DataTable
+									data={matchData.playerStats.filter((x) => x.team_number === teamTwo)}
+									columns={basicColumns}
+								/>
+							</div>
+						</div>
+					{:else if firstTab === 'advanced'}
 						<div class="flex flex-col gap-2">
-							<div class="text-lg">Team 1</div>
 							<DataTable
 								data={matchData.playerStats.filter((x) => x.team_number === teamOne)}
-								columns={basicColumns}
+								columns={advancedColumns}
 							/>
-						</div>
-						<div class="flex flex-col gap-2">
-							<div>Team 2</div>
 							<DataTable
 								data={matchData.playerStats.filter((x) => x.team_number === teamTwo)}
-								columns={basicColumns}
+								columns={advancedColumns}
 							/>
 						</div>
-					</div>
-				{:else if firstTab === 'advanced'}
-					<div class="flex flex-col gap-2">
-						<DataTable
-							data={matchData.playerStats.filter((x) => x.team_number === teamOne)}
-							columns={advancedColumns}
-						/>
-						<DataTable
-							data={matchData.playerStats.filter((x) => x.team_number === teamTwo)}
-							columns={advancedColumns}
-						/>
-					</div>
-				{:else if firstTab === 'rating'}
-					<div class="flex flex-col gap-2">
-						<DataTable
-							data={matchData.playerStats
-								.filter((x) => x.team_number === teamOne)
-								.map((x) => {
-									return {
-										...x,
-										...x.rawHLTVRating
-									};
-								})}
-							columns={ratingColumns}
-						/>
-						<DataTable
-							data={matchData.playerStats
-								.filter((x) => x.team_number === teamTwo)
-								.map((x) => {
-									return {
-										...x,
-										...x.rawHLTVRating
-									};
-								})}
-							columns={ratingColumns}
-						/>
-					</div>
-				{/if}
+					{:else if firstTab === 'rating'}
+						<div class="flex flex-col gap-2">
+							<DataTable
+								data={matchData.playerStats
+									.filter((x) => x.team_number === teamOne)
+									.map((x) => {
+										return {
+											...x,
+											...x.rawHLTVRating
+										};
+									})}
+								columns={ratingColumns}
+							/>
+							<DataTable
+								data={matchData.playerStats
+									.filter((x) => x.team_number === teamTwo)
+									.map((x) => {
+										return {
+											...x,
+											...x.rawHLTVRating
+										};
+									})}
+								columns={ratingColumns}
+							/>
+						</div>
+					{/if}
+				</div>
 			{/await}
 		</div>
 	</div>
@@ -747,7 +749,7 @@
 	</div>
 	<div class="mx-auto flex max-w-screen-xl grow flex-col gap-4 rounded-xl border">
 		<div class="flex flex-col gap-2">
-			<div class="px-2 text-2xl">Duels</div>
+			<div class="px-2 py-2 text-2xl">Duels</div>
 			<div class="margin flex flex-wrap rounded-lg">
 				<div class="flex flex-col">
 					{#each matchData.playerStats.filter((x) => x.team_number === teamOne) as player, i}

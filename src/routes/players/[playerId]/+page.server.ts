@@ -173,7 +173,7 @@ export const load = async ({ params }) => {
 	return {
 		hltvTimeline: hltvTimeline,
 		stats: playerStats.find(playerStat => playerStat.steamid === params.playerId),
-		maps: mapStats
+		maps: mapStats.sort((a, b) => b.matches - a.matches)
 	}
 }
 

@@ -41,6 +41,10 @@
 			return timeline.filter(
 				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 30 * 24 * 60 * 60 * 1000).unix()
 			);
+		} else if (duration === '14d') {
+			return timeline.filter(
+				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 14 * 24 * 60 * 60 * 1000).unix()
+			);
 		} else if (duration === '7d') {
 			return timeline.filter(
 				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 7 * 24 * 60 * 60 * 1000).unix()
@@ -168,6 +172,10 @@
 			<Button
 				variant={duration === '30d' ? 'secondary' : 'outline'}
 				onclick={() => (duration = '30d')}>30d</Button
+			>
+			<Button
+				variant={duration === '14d' ? 'secondary' : 'outline'}
+				onclick={() => (duration = '14d')}>14d</Button
 			>
 			<Button
 				variant={duration === '7d' ? 'secondary' : 'outline'}

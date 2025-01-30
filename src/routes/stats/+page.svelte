@@ -10,6 +10,10 @@
 	let statTab = $state('basic');
 </script>
 
+<svelte:head>
+	<title>Stats</title>
+</svelte:head>
+
 <div class="flex flex-col gap-4 px-1">
 	<div class="flex gap-2">
 		<Button

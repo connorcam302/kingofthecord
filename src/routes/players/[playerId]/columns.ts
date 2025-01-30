@@ -3,6 +3,7 @@ import { renderComponent, renderSnippet } from "$lib/components/ui/data-table";
 import SortableHeader from "./SortableHeader.svelte";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
+
 export type MapData = {
 	name: string;
 	matches: number;

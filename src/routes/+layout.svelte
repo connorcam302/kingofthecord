@@ -4,7 +4,15 @@
 	import { page, navigating } from '$app/state';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
-	import { Home, SwatchBook, Boxes, LinkedinIcon, TwitterIcon, GithubIcon } from 'lucide-svelte';
+	import {
+		Home,
+		SwatchBook,
+		Boxes,
+		LinkedinIcon,
+		TwitterIcon,
+		GithubIcon,
+		ChartBarIcon
+	} from 'lucide-svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import HamburgerIcon from '$lib/components/HamburgerIcon.svelte';
@@ -32,16 +40,13 @@
 			name: 'Team Builder',
 			path: '/team-builder',
 			icon: Boxes
+		},
+		{
+			name: 'Stats',
+			path: '/stats',
+			icon: ChartBarIcon
 		}
 	];
-
-	$effect(() => {
-		console.log(data.url);
-	});
-
-	$effect(() => {
-		console.log(displayMobileMenu);
-	});
 </script>
 
 <Toaster />

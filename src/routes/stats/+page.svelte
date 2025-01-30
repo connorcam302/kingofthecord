@@ -22,9 +22,11 @@
 		>
 	</div>
 
-	{#if statTab === 'basic'}
-		<DataTable data={playerStats} columns={basicColumns} />
-	{:else if statTab === 'advanced'}
-		<DataTable data={playerStats} columns={advancedColumns} />
-	{/if}
+	<div class="w-96 overflow-auto md:w-full">
+		{#if statTab === 'basic'}
+			<DataTable data={playerStats} columns={basicColumns} />
+		{:else if statTab === 'advanced'}
+			<DataTable data={playerStats} columns={advancedColumns} />
+		{/if}
+	</div>
 </div>

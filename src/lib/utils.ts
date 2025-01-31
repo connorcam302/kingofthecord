@@ -94,7 +94,8 @@ export const getName = (player: { name: string; steamid: string; }) => {
 		"76561198051802093": "Dan",
 		"76561198040636119": "Bingham",
 		"76561198061114587": "Liam",
-		"76561198114107073": "Pona"
+		"76561198114107073": "Pona",
+		"76561198070364957": "Dom"
 	}
 
 	if (players[player.steamid]) {
@@ -121,7 +122,8 @@ export const getNameById = (id: string) => {
 		"76561198051802093": "Dan",
 		"76561198040636119": "Bingham",
 		"76561198061114587": "Liam",
-		"76561198114107073": "Pona"
+		"76561198114107073": "Pona",
+		"76561198070364957": "Dom"
 	}
 
 	return players[id] || false;

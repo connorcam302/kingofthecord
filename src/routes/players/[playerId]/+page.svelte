@@ -357,7 +357,7 @@
 				{/each}
 			</div>
 		</div>
-		<div class="flex w-96 flex-col overflow-auto md:w-full md:gap-4">
+		<div class="flex w-96 flex-col gap-4 overflow-auto md:w-full">
 			<MapTable data={maps} columns={basicColumns} />
 			{#key duelStats}
 				<DuelTable data={duelStats} columns={duelColumns} />

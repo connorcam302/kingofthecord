@@ -81,7 +81,7 @@ export const load = async ({ params }) => {
 				const didPlayerWin = playerTeam === winner
 
 				const hltvRating = calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate)
-				mapStats.push({ ...playerMatchData, rawHltv, hltvRating, isWinningTeam, hltvRatingRaw: { kpr, dpr, apr, impact, adr, survivalRate, rounds: match.playerStats.length }, timestamp: match.lobbyInfo.timestamp, matchId: match.lobbyInfo.id, map: match.lobbyInfo.map_name, didPlayerWin, rounds: match.rounds.length, teamOneScore: match.rounds[match.rounds.length - 1].teamOneScore, teamTwoScore: match.rounds[match.rounds.length - 1].teamTwoScore })
+				mapStats.push({ ...playerMatchData, rawHltv, hltvRating, isWinningTeam, hltvRatingRaw: { kpr, dpr, apr, impact, adr, survivalRate, rounds: match.playerStats.length }, timestamp: match.lobbyInfo.timestamp, matchId: match.lobbyInfo.id, map: match.lobbyInfo.map_name, didPlayerWin, rounds: match.rounds.length, teamOneScore: match.rounds[match.rounds.length - 1].teamOneScore, teamTwoScore: match.rounds[match.rounds.length - 1].teamTwoScore, rounds: match.rounds })
 			}
 		})
 
@@ -170,10 +170,55 @@ export const load = async ({ params }) => {
 		})
 	})
 
+	const duels = []
+
+	playerStats.find(playerStat => playerStat.steamid === params.playerId).mapStats.forEach((match) => {
+		const matchDuels = {
+			map: match.map,
+			id: match.matchId,
+			duels: {}
+		}
+		match.rounds.forEach((round) => {
+			const outGoingDamage = round.damage.find((x) => x.attacker_steamid === params.playerId);
+			outGoingDamage?.damage_dealt.forEach((attackerDamage) => {
+				const attackerKill = attackerDamage.killed;
+				const defenderId = attackerDamage.defender;
+				const defenderName = attackerDamage.defenderName
+
+				// Always initialize duels
+				if (!matchDuels.duels[defenderId]) {
+					matchDuels.duels[defenderId] = {
+						name: defenderName,
+						defender: defenderId,
+						attackerScore: 0,
+						defenderScore: 0
+					};
+				}
+
+				// Lookup defender's attack safely
+				const defenderData = round.damage.find((x) => x.attacker_steamid === defenderId);
+				const defenderKill = defenderData?.damage_dealt.find((x) => x.defender === params.playerId)?.killed || false;
+
+				// Update scores
+				if (attackerKill) {
+					matchDuels.duels[defenderId].attackerScore += 1;
+				} else if (defenderKill) {
+					matchDuels.duels[defenderId].defenderScore += 1;
+				}
+			});
+		});
+
+
+		duels.push(matchDuels)
+	})
+
+
+
 	return {
 		hltvTimeline: hltvTimeline,
 		stats: playerStats.find(playerStat => playerStat.steamid === params.playerId),
-		maps: mapStats.sort((a, b) => b.matches - a.matches)
+		maps: mapStats.sort((a, b) => b.matches - a.matches),
+		duels
 	}
 }
 

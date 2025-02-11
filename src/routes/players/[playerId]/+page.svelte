@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import dayjs from 'dayjs';
-	import { getMapString } from '$lib/utils';
+	import { getMapString, getName } from '$lib/utils';
 
 	import * as Select from '$lib/components/ui/select/index.js';
 	import {
@@ -17,15 +17,19 @@
 	import advancedFormat from 'dayjs/plugin/advancedFormat';
 	import HltvTimeline from './HltvTimeline.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import DataTable from './data-table.svelte';
-	import { basicColumns } from './columns';
+	import MapTable from './MapTable.svelte';
+	import DuelTable from './DuelTable.svelte';
+	import { basicColumns, duelColumns } from './columns';
+	import HltvGroupings from './HltvGroupings.svelte';
+	import Input from '$lib/components/ui/input/input.svelte';
 
 	dayjs.extend(advancedFormat);
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
+	console.log(data);
 
-	const { stats, hltvTimeline, maps } = data;
+	const { stats, hltvTimeline, maps, duels } = data;
 
 	let duration = $state('30d');
 
@@ -61,6 +65,8 @@
 	let mapFilter = $state('all');
 	let sortedBy = $state('date');
 	let sortDirection = $state('desc');
+	let intervalInput = $state();
+	let interval = $state(0.1);
 
 	const filterMatches = (matches, mapFilter, sortedBy, sortDirection) => {
 		let filteredMatches = matches;
@@ -108,16 +114,60 @@
 			}
 		});
 
-		console.log(mapFilter, sortedBy, sortDirection);
-		console.log(filteredMatches);
-
 		return filteredMatches;
 	};
 
+	const filterDuels = (duels, mapFilter) => {
+		let filteredDuels = duels;
+		if (mapFilter !== 'all') {
+			filteredDuels = filteredDuels.filter((x) => x.map === mapFilter);
+		}
+
+		// filtered duels contains the duel stats for each map, each will be an array of 5 objects like the following 76561198040636119: {attackerScore: 8, defenderScore: 1}. Total up the players attackerScore and defenderScore against each player
+
+		const duelStatsRaw = [];
+
+		filteredDuels.forEach((duels) => {
+			Object.values(duels.duels).forEach((duel) => {
+				let existingDuelStat = duelStatsRaw.find((x) => x.defender === duel.defender);
+
+				if (!existingDuelStat) {
+					existingDuelStat = {
+						defender: duel.defender,
+						attackerScore: 0,
+						defenderScore: 0
+					};
+					duelStatsRaw.push(existingDuelStat);
+				}
+
+				existingDuelStat.attackerScore += duel.attackerScore;
+				existingDuelStat.defenderScore += duel.defenderScore;
+			});
+		});
+
+		const duelStats = duelStatsRaw
+			.map((duels) => {
+				return {
+					id: duels.defender,
+					name: getName({ steamid: duels.defender, name: duels.name }),
+					duels: duels.attackerScore + duels.defenderScore,
+					winRate: (duels.attackerScore / (duels.attackerScore + duels.defenderScore)) * 100,
+					wins: duels.attackerScore
+				};
+			})
+			.filter((x) => x.name !== undefined)
+			.sort((a, b) => b.duels - a.duels);
+
+		console.log(duelStats);
+		return duelStats;
+	};
+
 	let matches = $state(filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection));
+	let duelStats = $state(filterDuels(duels, mapFilter));
 
 	$effect(() => {
 		matches = filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection);
+		duelStats = filterDuels(duels, mapFilter);
 	});
 </script>
 
@@ -149,7 +199,7 @@
 			</div>
 			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'Rating' }}>
 				<CandlestickChart />
-				{stats.avg_hltvRating.toFixed(0)}
+				{stats.avg_hltvRating.toFixed(2)}
 			</div>
 		</div>
 	</div>
@@ -185,6 +235,25 @@
 				variant={duration === '1d' ? 'secondary' : 'outline'}
 				onclick={() => (duration = '1d')}>1d</Button
 			>
+		</div>
+	</div>
+	<div class="rounded-xl border p-2 px-4">
+		{#key [matches, interval]}
+			<div class="w-full grow">
+				<HltvGroupings matchData={matches} {interval} />
+			</div>
+		{/key}
+		<div class="flex gap-2">
+			<Input
+				step=".01"
+				min="0.01"
+				max="2"
+				type="email"
+				placeholder="Interval"
+				class="w-20"
+				bind:value={intervalInput}
+			/>
+			<Button type="submit" onclick={() => (interval = parseFloat(intervalInput))}>Set</Button>
 		</div>
 	</div>
 	<div class="flex flex-col-reverse gap-4 md:flex-row">
@@ -288,8 +357,11 @@
 				{/each}
 			</div>
 		</div>
-		<div class="w-96 overflow-auto md:w-full">
-			<DataTable data={maps} columns={basicColumns} />
+		<div class="flex w-96 flex-col overflow-auto md:w-full md:gap-4">
+			<MapTable data={maps} columns={basicColumns} />
+			{#key duelStats}
+				<DuelTable data={duelStats} columns={duelColumns} />
+			{/key}
 		</div>
 	</div>
 </div>

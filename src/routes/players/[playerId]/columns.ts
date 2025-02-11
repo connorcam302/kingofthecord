@@ -87,3 +87,66 @@ export const basicColumns: ColumnDef<MapData>[] = [
 	}
 ];
 
+export const duelColumns: ColumnDef<MapData>[] = [
+	{
+		accessorKey: "name",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Name",
+				column,
+			}),
+		cell: ({ row }) => {
+
+			const nameCellSnippet = createRawSnippet<[string]>((getName) => {
+				const name = getName();
+				return {
+					render: () => `<div class="text-left font-bold">${name}</div>`,
+				};
+			});
+
+			return renderSnippet(
+				nameCellSnippet,
+				row.getValue('name')
+			);
+		}
+	},
+	{
+		accessorKey: "duels",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Duels",
+				column,
+			}),
+	},
+
+	{
+		accessorKey: "winRate",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Win Rate",
+				column,
+			}),
+		cell: ({ row }) => {
+
+			const winRateCellSnippet = createRawSnippet<[string]>((getWinRate) => {
+				const winRate = getWinRate();
+				return {
+					render: () => `<div class="text-center">${winRate}</div>`,
+				};
+			});
+
+			return renderSnippet(
+				winRateCellSnippet,
+				parseFloat(row.getValue('winRate')).toFixed(1) + " %"
+			);
+		}
+	},
+	{
+		accessorKey: "wins",
+		header: ({ column }) =>
+			renderComponent(SortableHeader, {
+				label: "Wins",
+				column,
+			}),
+	}
+]

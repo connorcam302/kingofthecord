@@ -35,6 +35,8 @@
 	};
 
 	const matches = $derived(filterMatches(matchData, mapFilter, playerFilter));
+
+	console.log(matchData);
 </script>
 
 <svelte:head>

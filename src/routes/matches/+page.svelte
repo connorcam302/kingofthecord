@@ -19,8 +19,9 @@
 
 	let mapFilter = $state('all');
 	let playerFilter = $state('all');
+	let seasonFilter = $state('all');
 
-	const filterMatches = (matches, mapFilter, playerFilter) => {
+	const filterMatches = (matches, mapFilter, playerFilter, seasonFilter) => {
 		let filteredMatches = matches;
 		if (mapFilter !== 'all') {
 			filteredMatches = filteredMatches.filter((x) => x.lobbyInfo.map_name === mapFilter);
@@ -30,11 +31,14 @@
 				x.playerStats.find((y) => y.steamid === playerFilter)
 			);
 		}
+		if (seasonFilter !== 'all') {
+			filteredMatches = filteredMatches.filter((x) => x.season === parseInt(seasonFilter));
+		}
 
 		return filteredMatches;
 	};
 
-	const matches = $derived(filterMatches(matchData, mapFilter, playerFilter));
+	const matches = $derived(filterMatches(matchData, mapFilter, playerFilter, seasonFilter));
 
 	console.log(matchData);
 </script>
@@ -72,6 +76,17 @@
 							{/each}
 						</Select.Content>
 					</Select.Root>
+					<Select.Root type="single" bind:value={seasonFilter}>
+						<Select.Trigger class="w-[140px]"
+							>{seasonFilter === 'all' ? 'All Seasons' : `Season ${seasonFilter}`}</Select.Trigger
+						>
+						<Select.Content>
+							<Select.Item value="all">All Seasons</Select.Item>
+							{#each data.seasons as season}
+								<Select.Item value={season.toString()}>Season {season}</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
 				</div>
 				<div class="text-right text-slate-400">
 					Matches displayed: {matches.length}
@@ -82,10 +97,18 @@
 		<div class="flex flex-col items-center justify-center gap-2 md:flex-row md:flex-wrap">
 			{#each matches.sort((a, b) => b.lobbyInfo.timestamp - a.lobbyInfo.timestamp) as match, i}
 				<button
-					class="w-96 rounded-lg p-4 md:p-4"
+					class="relative w-96 rounded-lg p-4 md:p-4"
 					style={`background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/maps/${match.lobbyInfo.map_name}.webp');background-size: cover; background-position: center;`}
 					onclick={() => goto(`/matches/${match.lobbyInfo.id}`)}
 				>
+					<div
+						class="absolute right-2 top-2 rounded px-2 py-1 text-xs font-bold"
+						class:bg-blue-600={match.season === 1}
+						class:bg-green-600={match.season === 2}
+						class:bg-gray-600={match.season === undefined || match.season === null}
+					>
+						{match.season ? `Season ${match.season}` : 'Season ?'}
+					</div>
 					<div class="flex flex-col items-center gap-2">
 						<div class="flex items-center justify-center gap-2">
 							<div class="flex items-center justify-center gap-4">
@@ -105,12 +128,18 @@
 						<div class="flex max-w-screen-sm items-center justify-between px-2">
 							<div class="flex w-44 flex-col gap-1 truncate text-left">
 								{#each match.playerStats.filter((x) => x.team_number === 2) as player}
-									<div class="w-44 truncate">{player.name}</div>
+									<a
+										href="/players/{player.steamid}"
+										class="w-44 truncate transition-colors hover:text-blue-400">{player.name}</a
+									>
 								{/each}
 							</div>
 							<div class="flex w-44 flex-col gap-1 truncate text-right">
 								{#each match.playerStats.filter((x) => x.team_number === 3) as player}
-									<div class="w-44 truncate">{player.name}</div>
+									<a
+										href="/players/{player.steamid}"
+										class="w-44 truncate transition-colors hover:text-blue-400">{player.name}</a
+									>
 								{/each}
 							</div>
 						</div>

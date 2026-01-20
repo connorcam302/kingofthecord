@@ -45,7 +45,7 @@
 				<Table.Row>
 					{#each headerGroup.headers as header (header.id)}
 						{#if header.id === 'name'}
-							<Table.Head class="min-w-48 text-center">
+							<Table.Head class="min-w-48 pl-2 text-left">
 								{#if !header.isPlaceholder}
 									<FlexRender
 										content={header.column.columnDef.header}
@@ -71,7 +71,7 @@
 			{#each table.getRowModel().rows as row (row.id)}
 				<Table.Row data-state={row.getIsSelected() && 'selected'}>
 					{#each row.getVisibleCells() as cell (cell.id)}
-						<Table.Cell class="text-center">
+						<Table.Cell class={cell.column.id === 'name' ? 'text-left' : 'text-center'}>
 							<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
 						</Table.Cell>
 					{/each}

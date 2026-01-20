@@ -1,28 +1,7 @@
-import { renderComponent, renderSnippet } from "$lib/components/ui/data-table";
-import SortableHeader from "./SortableHeader.svelte";
-import type { ColumnDef } from "@tanstack/table-core";
-import { createRawSnippet } from "svelte";
-/*{
-	"name": "2colfox",
-	"steamid": "76561198046884782",
-	"team_number": 2,
-	"oneK": 15,
-	"twoK": 7,
-	"threeK": 1,
-	"fourK": 0,
-	"fiveK": 0,
-	"alive_time_total": 596,
-	"assists_total": 9,
-	"damage_total": 2571,
-	"deaths_total": 15,
-	"enemies_flashed_total": 5,
-	"headshot_kills_total": 12,
-	"kills_total": 23,
-	"mvps": 2,
-	"score": 59,
-	"tick": 138258,
-	"utility_damage_total": 218
-}*/
+import { renderComponent } from '$lib/components/ui/data-table';
+import SortableHeader from './SortableHeader.svelte';
+import type { ColumnDef } from '@tanstack/table-core';
+import PlayerNameLink from './PlayerNameLink.svelte';
 
 export type BasicTeamData = {
 	name: string;
@@ -47,7 +26,7 @@ export type AdvancedTeamData = {
 	headshot_kills_total: number;
 	enemies_flashed_total: number;
 	utility_damage_total: number;
-}
+};
 
 export type RatingTeamData = {
 	name: string;
@@ -57,266 +36,236 @@ export type RatingTeamData = {
 	impact: number;
 	adr: number;
 	survivalRate: number;
-}
+};
 
 export const basicColumns: ColumnDef<BasicTeamData>[] = [
 	{
-		accessorKey: "name",
+		accessorKey: 'name',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Name",
-				classProps: "w-32",
-				column,
+				label: 'Name',
+				classProps: 'w-32',
+				column
 			}),
-		cell: ({ row }) => {
-
-			const nameCellSnippet = createRawSnippet<[string]>((getName) => {
-				const name = getName();
-				return {
-					render: () => `<div class="text-left font-bold min-w-32">${name}</div>`,
-				};
-			});
-
-			return renderSnippet(
-				nameCellSnippet,
-				row.getValue('name')
-			);
-		}
+		cell: ({ row }) =>
+			renderComponent(PlayerNameLink, {
+				name: row.getValue('name'),
+				steamid: row.original.steamid
+			})
 	},
 	{
-		accessorKey: "kills_total",
+		accessorKey: 'kills_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Kills",
-				column,
-			}),
+				label: 'Kills',
+				column
+			})
 	},
 	{
-		accessorKey: "deaths_total",
+		accessorKey: 'deaths_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Deaths",
-				column,
-			}),
+				label: 'Deaths',
+				column
+			})
 	},
 	{
-		accessorKey: "assists_total",
+		accessorKey: 'assists_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Assists",
-				column,
-			}),
+				label: 'Assists',
+				column
+			})
 	},
 	{
-		accessorKey: "mvps",
+		accessorKey: 'mvps',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "MVPs",
-				column,
-			}),
+				label: 'MVPs',
+				column
+			})
 	},
 	{
-		accessorKey: "score",
+		accessorKey: 'score',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Score",
-				column,
-			}),
+				label: 'Score',
+				column
+			})
 	},
 	{
-		accessorKey: "damage_total",
+		accessorKey: 'damage_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Damage",
-				column,
-			}),
+				label: 'Damage',
+				column
+			})
 	},
 	{
-		accessorKey: "hltvRating",
+		accessorKey: 'hltvRating',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Rating",
-				column,
-			}),
+				label: 'Rating',
+				column
+			})
 	}
 ];
 export const advancedColumns: ColumnDef<AdvancedTeamData>[] = [
 	{
-		accessorKey: "name",
-		header: "Name",
-		cell: ({ row }) => {
-
-			const nameCellSnippet = createRawSnippet<[string]>((getName) => {
-				const name = getName();
-				return {
-					render: () => `<div class="text-left font-bold">${name}</div>`,
-				};
-			});
-
-			return renderSnippet(
-				nameCellSnippet,
-				row.getValue('name')
-			);
-		}
-
+		accessorKey: 'name',
+		header: 'Name',
+		cell: ({ row }) =>
+			renderComponent(PlayerNameLink, {
+				name: row.getValue('name'),
+				steamid: row.original.steamid
+			})
 	},
 	{
-		accessorKey: "alive_time_total",
+		accessorKey: 'alive_time_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Time Alive",
-				column,
-			}),
+				label: 'Time Alive',
+				column
+			})
 	},
 	{
-		accessorKey: "headshot_kills_total",
+		accessorKey: 'headshot_kills_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Headshots Kills",
-				column,
-			}),
+				label: 'Headshots Kills',
+				column
+			})
 	},
 	{
-		accessorKey: "utility_damage_total",
+		accessorKey: 'utility_damage_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Utility Damage",
-				column,
-			}),
+				label: 'Utility Damage',
+				column
+			})
 	},
 	{
-		accessorKey: "enemies_flashed_total",
+		accessorKey: 'enemies_flashed_total',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Enemies Flashed",
-				column,
-			}),
+				label: 'Enemies Flashed',
+				column
+			})
 	},
 	{
-		accessorKey: "oneK",
+		accessorKey: 'oneK',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "1K",
-				column,
-			}),
+				label: '1K',
+				column
+			})
 	},
 	{
-		accessorKey: "twoK",
+		accessorKey: 'twoK',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "2K",
-				column,
-			}),
+				label: '2K',
+				column
+			})
 	},
 	{
-		accessorKey: "threeK",
+		accessorKey: 'threeK',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "3K",
-				column,
-			}),
+				label: '3K',
+				column
+			})
 	},
 	{
-		accessorKey: "fourK",
+		accessorKey: 'fourK',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "4K",
-				column,
-			}),
+				label: '4K',
+				column
+			})
 	},
 	{
-		accessorKey: "fiveK",
+		accessorKey: 'fiveK',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "5K",
-				column,
-			}),
-
+				label: '5K',
+				column
+			})
 	},
 	{
-		accessorKey: "score",
+		accessorKey: 'score',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Score",
-				column,
-			}),
+				label: 'Score',
+				column
+			})
 	}
-]
+];
 
 export const ratingColumns: ColumnDef<RatingTeamData>[] = [
 	{
-		accessorKey: "name",
-		header: "Name",
-		cell: ({ row }) => {
-
-			const nameCellSnippet = createRawSnippet<[string]>((getName) => {
-				const name = getName();
-				return {
-					render: () => `<div class="text-left font-bold">${name}</div>`,
-				};
-			});
-
-			return renderSnippet(
-				nameCellSnippet,
-				row.getValue('name')
-			);
-		}
-
+		accessorKey: 'name',
+		header: 'Name',
+		cell: ({ row }) =>
+			renderComponent(PlayerNameLink, {
+				name: row.getValue('name'),
+				steamid: row.original.steamid
+			})
 	},
 	{
-		accessorKey: "kpr",
+		accessorKey: 'kpr',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "KPR",
-				column,
-			}),
+				label: 'KPR',
+				column
+			})
 	},
 	{
-		accessorKey: "dpr",
+		accessorKey: 'dpr',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "DPR",
-				column,
-			}),
+				label: 'DPR',
+				column
+			})
 	},
 	{
-		accessorKey: "apr",
+		accessorKey: 'apr',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "APR",
-				column,
-			}),
+				label: 'APR',
+				column
+			})
 	},
 	{
-		accessorKey: "adr",
+		accessorKey: 'adr',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "ADR",
-				column,
-			}),
+				label: 'ADR',
+				column
+			})
 	},
 	{
-		accessorKey: "impact",
+		accessorKey: 'impact',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Impact",
-				column,
-			}),
+				label: 'Impact',
+				column
+			})
 	},
 	{
-		accessorKey: "survivalRate",
+		accessorKey: 'survivalRate',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Survival Rate",
-				column,
-			}),
+				label: 'Survival Rate',
+				column
+			})
 	},
 	{
-		accessorKey: "hltvRating",
+		accessorKey: 'hltvRating',
 		header: ({ column }) =>
 			renderComponent(SortableHeader, {
-				label: "Rating",
-				column,
-			}),
+				label: 'Rating',
+				column
+			})
 	}
-]
+];

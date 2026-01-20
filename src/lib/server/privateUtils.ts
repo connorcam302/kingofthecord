@@ -1,23 +1,41 @@
-import { getName } from "$lib/utils";
+import { getName as getNameFromUtils } from '$lib/utils';
+import { getAllMatches, getAllMatchIds, getUserName, getActiveSteamids } from '$lib/server/mongodb';
+
+const userNameCache = new Map<string, string>();
 
 export const fetchMatches = async () => {
-	const matchIds = async () => {
-		const matchIds = await import('$lib/server/matches/matchIds.json');
-		return matchIds.default;
+	const matches = await getAllMatches();
+
+	if (!matches || !Array.isArray(matches)) {
+		return [];
 	}
 
-	const matches = [];
-
-	const matchIdArray = await matchIds();
-	for (const matchId of matchIdArray) {
-		const match = await import(`$lib/server/matches/${matchId}.json`);
-		matches.push(match.default);
+	for (const match of matches) {
+		if (match?.playerStats) {
+			for (const playerStat of match.playerStats) {
+				if (!userNameCache.has(playerStat.steamid)) {
+					const name = await getUserName(playerStat.steamid);
+					userNameCache.set(playerStat.steamid, name);
+				}
+				playerStat.name = userNameCache.get(playerStat.steamid)!;
+			}
+		}
 	}
-
-	matches.forEach(match => {
-		match.playerStats.forEach(playerStat => {
-			playerStat.name = getName(playerStat)
-		})
-	})
 	return matches;
-}
+};
+
+export const getPlayerName = async (steamid: string): Promise<string> => {
+	if (userNameCache.has(steamid)) {
+		return userNameCache.get(steamid)!;
+	}
+	const name = await getUserName(steamid);
+	userNameCache.set(steamid, name);
+	return name;
+};
+
+export const isExcludedPlayer = async (steamid: string): Promise<boolean> => {
+	const activeSteamids = await getActiveSteamids();
+	return !activeSteamids.includes(steamid);
+};
+
+export { getAllMatchIds };

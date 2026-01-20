@@ -67,11 +67,15 @@
 	let sortDirection = $state('desc');
 	let intervalInput = $state();
 	let interval = $state(0.1);
+	let seasonFilter = $state('all');
 
-	const filterMatches = (matches, mapFilter, sortedBy, sortDirection) => {
+	const filterMatches = (matches, mapFilter, sortedBy, sortDirection, seasonFilter) => {
 		let filteredMatches = matches;
 		if (mapFilter !== 'all') {
 			filteredMatches = filteredMatches.filter((x) => x.map === mapFilter);
+		}
+		if (seasonFilter !== 'all') {
+			filteredMatches = filteredMatches.filter((x) => x.season === parseInt(seasonFilter));
 		}
 		// sort by the sorted by criteria and sort direction
 		filteredMatches = filteredMatches.sort((a, b) => {
@@ -162,11 +166,13 @@
 		return duelStats;
 	};
 
-	let matches = $state(filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection));
+	let matches = $state(
+		filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection, seasonFilter)
+	);
 	let duelStats = $state(filterDuels(duels, mapFilter));
 
 	$effect(() => {
-		matches = filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection);
+		matches = filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection, seasonFilter);
 		duelStats = filterDuels(duels, mapFilter);
 	});
 </script>
@@ -259,17 +265,30 @@
 	<div class="flex flex-col-reverse gap-4 md:flex-row">
 		<div class="flex flex-col gap-2">
 			<div class="flex justify-between gap-2">
-				<Select.Root type="single" bind:value={mapFilter}>
-					<Select.Trigger class="w-[140px]"
-						>{mapFilter === 'all' ? 'Select Map' : getMapString(mapFilter)}</Select.Trigger
-					>
-					<Select.Content>
-						<Select.Item value="all">All</Select.Item>
-						{#each Array.from(new Set(stats.mapStats.map((x) => x.map))).sort() as map}
-							<Select.Item value={map}>{getMapString(map)}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				<div class="flex gap-2">
+					<Select.Root type="single" bind:value={mapFilter}>
+						<Select.Trigger class="w-[140px]"
+							>{mapFilter === 'all' ? 'Select Map' : getMapString(mapFilter)}</Select.Trigger
+						>
+						<Select.Content>
+							<Select.Item value="all">All</Select.Item>
+							{#each Array.from(new Set(stats.mapStats.map((x) => x.map))).sort() as map}
+								<Select.Item value={map}>{getMapString(map)}</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+					<Select.Root type="single" bind:value={seasonFilter}>
+						<Select.Trigger class="w-[140px]"
+							>{seasonFilter === 'all' ? 'All Seasons' : `Season ${seasonFilter}`}</Select.Trigger
+						>
+						<Select.Content>
+							<Select.Item value="all">All Seasons</Select.Item>
+							{#each data.seasons as season}
+								<Select.Item value={season.toString()}>Season {season}</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+				</div>
 				<div class="flex gap-2">
 					<Select.Root type="single" bind:value={sortedBy}>
 						<Select.Trigger class="w-[140px]"
@@ -301,13 +320,23 @@
 					<div class="flex flex-col items-center justify-center gap-4">
 						<button onclick={() => goto(`/matches/${match.matchId}`)}>
 							<div
-								class="w-96 grow rounded-lg border p-4 md:p-4"
+								class="relative w-96 grow rounded-lg border p-4 md:p-4"
 								style={`background-image: linear-gradient(rgba(0, 0, 0, 0.4), ${match.didPlayerWin ? 'rgba(20, 83, 45, 0.7)' : 'rgba(127, 29, 29, 0.7)'}), url('/maps/${match.map}.webp');background-size: cover; background-position: center;`}
 							>
 								<div class="flex flex-col gap-2">
 									<div class="flex items-center justify-between gap-2 text-left text-sm">
 										<div class="flex flex-col">
-											<div>{dayjs(match.timestamp * 1000).format('Do MMM YYYY HH:mm')}</div>
+											<div class=" flex items-center gap-2">
+												<div
+													class="rounded px-2 py-1 text-xs font-bold"
+													class:bg-blue-600={match.season === 1}
+													class:bg-green-600={match.season === 2}
+													class:bg-gray-600={match.season === undefined || match.season === null}
+												>
+													{match.season ? `Season ${match.season}` : 'Season ?'}
+												</div>
+												{dayjs(match.timestamp * 1000).format('Do MMM YYYY HH:mm')}
+											</div>
 											<div>{getMapString(match.map)}</div>
 										</div>
 										<div class="text-2xl">{match.teamOneScore} - {match.teamTwoScore}</div>

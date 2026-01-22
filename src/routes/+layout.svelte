@@ -11,7 +11,8 @@
 		LinkedinIcon,
 		TwitterIcon,
 		GithubIcon,
-		ChartBarIcon
+		ChartBarIcon,
+		Upload
 	} from 'lucide-svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -45,6 +46,11 @@
 			name: 'Stats',
 			path: '/stats',
 			icon: ChartBarIcon
+		},
+		{
+			name: 'Upload',
+			path: '/upload',
+			icon: Upload
 		}
 	];
 </script>
@@ -134,7 +140,10 @@
 				<ul class="flex flex-col gap-2 text-left text-2xl">
 					{#each navbar as { name, path, icon }}
 						<li>
-							{name}
+							<button onclick={() => navigate(path)} class="flex items-center gap-2">
+								<icon />
+								{name}
+							</button>
 						</li>
 					{/each}
 				</ul>

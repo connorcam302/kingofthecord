@@ -1,9 +1,9 @@
-import { fetchMatches } from '$lib/server/privateUtils';
+import { getLatestSeason, getMatchesBySeason, getActiveSteamids } from '$lib/server/mongodb';
 import { calculateHLTVRating, calculateImpact } from '$lib/utils';
-import { getActiveSteamids } from '$lib/server/mongodb';
 
 export const load = async ({ params }) => {
-	const matchData = await fetchMatches();
+	const latestSeason = await getLatestSeason();
+	const matchData = await getMatchesBySeason(latestSeason);
 	const activeSteamids = await getActiveSteamids();
 
 	// Function to extract unique players with their steamid

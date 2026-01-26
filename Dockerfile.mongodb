@@ -1,0 +1,10 @@
+FROM mongo:7
+
+# Copy init script
+COPY scripts/mongo-init.sh /docker-entrypoint-initdb.d/mongo-init.sh
+RUN chmod +x /docker-entrypoint-initdb.d/mongo-init.sh
+
+# Copy dumps for restoration
+COPY data/dumps/ /dumps/
+
+EXPOSE 27017

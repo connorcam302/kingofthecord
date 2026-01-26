@@ -1,5 +1,9 @@
 #!/bin/bash
 # MongoDB init script - restores data on first run
+#
+# Usage:
+#   Linux/Mac:     ./mongo-init.sh
+#   Windows:       pwsh ./mongo-init.ps1
 
 set -e
 

@@ -36,9 +36,9 @@ RUN chown -R sveltekit:nodejs /app
 USER sveltekit
 
 # Configurable port - set at runtime with -e PORT
-EXPOSE ${PORT:-3000}
+EXPOSE ${PORT:-7777}
 
 ENV HOST=0.0.0.0
-ENV PORT=${PORT:-3000}
+ENV PORT=${PORT:-7777}
 
 CMD ["node", "build"]

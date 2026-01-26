@@ -27,7 +27,7 @@
 
 <div class="mx-auto flex max-w-screen-xl flex-col gap-8">
 	<div class="flex flex-col items-center justify-center gap-4">
-		<div class="text-center text-4xl">Leaderboard</div>
+		<div class="text-center text-4xl">Leaderboard.</div>
 		<div class="mx-auto flex max-w-screen-xl flex-col justify-center gap-4 px-2">
 			<div class="mx-auto w-fit overflow-hidden rounded-t-xl border text-sm md:text-base">
 				<table>

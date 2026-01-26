@@ -10,13 +10,28 @@ export const fetchMatches = async () => {
 		return [];
 	}
 
+	const uniqueSteamids = new Set<string>();
 	for (const match of matches) {
 		if (match?.playerStats) {
 			for (const playerStat of match.playerStats) {
-				if (!userNameCache.has(playerStat.steamid)) {
-					const name = await getUserName(playerStat.steamid);
-					userNameCache.set(playerStat.steamid, name);
-				}
+				uniqueSteamids.add(playerStat.steamid);
+			}
+		}
+	}
+
+	const namePromises = Array.from(uniqueSteamids).map(async (steamid) => {
+		if (!userNameCache.has(steamid)) {
+			const name = await getUserName(steamid);
+			userNameCache.set(steamid, name);
+		}
+		return { steamid, name: userNameCache.get(steamid)! };
+	});
+
+	await Promise.all(namePromises);
+
+	for (const match of matches) {
+		if (match?.playerStats) {
+			for (const playerStat of match.playerStats) {
 				playerStat.name = userNameCache.get(playerStat.steamid)!;
 			}
 		}

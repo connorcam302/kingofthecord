@@ -1,5 +1,8 @@
 import { MongoClient, type Db, type Collection, ObjectId } from 'mongodb';
 import { env } from '$env/dynamic/private';
+import { createLogger } from '$lib/server/logger';
+
+const log = createLogger('mongodb');
 
 const MONGODB_URI = env.MONGODB_URI || 'mongodb://localhost:27017';
 const MONGODB_DB = env.MONGODB_DB || 'kingofthecord';
@@ -10,9 +13,11 @@ let db: Db;
 export async function connectToDatabase(): Promise<Db> {
 	if (db) return db;
 
+	log.info('Connecting to MongoDB...');
 	client = new MongoClient(MONGODB_URI);
 	await client.connect();
 	db = client.db(MONGODB_DB);
+	log.info('Connected to MongoDB');
 	return db;
 }
 
@@ -136,7 +141,7 @@ export async function getAllMatches(): Promise<Omit<MatchDocument, '_id'>[]> {
 		const docs = await collection.find({}).toArray();
 		return docs.map(({ _id, ...rest }) => rest);
 	} catch (error) {
-		console.error('Error fetching matches:', error);
+		log.error({ error }, 'Error fetching matches');
 		return [];
 	}
 }
@@ -173,11 +178,13 @@ export async function insertMatch(
 	season: number = 2
 ): Promise<void> {
 	const collection = await getMatchesCollection();
+	log.info({ matchId: match.lobbyInfo.id, season }, 'Inserting match');
 	await collection.insertOne({
 		...match,
 		createdAt: new Date(),
 		season
 	});
+	log.info({ matchId: match.lobbyInfo.id }, 'Match inserted successfully');
 }
 
 export async function matchExists(id: string): Promise<boolean> {
@@ -284,6 +291,7 @@ export async function deleteUser(steamid: string): Promise<void> {
 }
 
 export async function seedUsers(): Promise<void> {
+	log.info('Seeding users...');
 	const users = [
 		{ steamid: '76561198122107609', displayName: 'Matthew', nickname: 'Matthew' },
 		{ steamid: '76561198254284578', displayName: 'Frenchy', nickname: 'Frenchy' },
@@ -313,4 +321,5 @@ export async function seedUsers(): Promise<void> {
 			active: user.active ?? true
 		});
 	}
+	log.info({ count: users.length }, 'Users seeded successfully');
 }

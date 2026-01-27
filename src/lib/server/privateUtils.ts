@@ -1,10 +1,15 @@
 import { getName as getNameFromUtils } from '$lib/utils';
 import { getAllMatches, getAllMatchIds, getUserName, getActiveSteamids } from '$lib/server/mongodb';
+import { createLogger } from '$lib/server/logger';
+
+const log = createLogger('privateUtils');
 
 const userNameCache = new Map<string, string>();
 
 export const fetchMatches = async () => {
+	log.info('Fetching all matches...');
 	const matches = await getAllMatches();
+	log.info({ matchCount: matches.length }, 'Fetched matches');
 
 	if (!matches || !Array.isArray(matches)) {
 		return [];
@@ -18,6 +23,8 @@ export const fetchMatches = async () => {
 			}
 		}
 	}
+
+	log.info({ playerCount: uniqueSteamids.size }, 'Found unique players');
 
 	const namePromises = Array.from(uniqueSteamids).map(async (steamid) => {
 		if (!userNameCache.has(steamid)) {
@@ -36,6 +43,7 @@ export const fetchMatches = async () => {
 			}
 		}
 	}
+	log.info('Matches enriched with player names');
 	return matches;
 };
 

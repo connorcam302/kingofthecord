@@ -1,44 +1,34 @@
-# Build stage
-FROM node:20-alpine AS builder
+# ---- base ----
+FROM oven/bun:1 AS base
+WORKDIR /usr/src/app
 
-WORKDIR /app
+# ---- install deps (cached) ----
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lock* /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Install dependencies
-COPY package*.json ./
-RUN npm ci
+RUN mkdir -p /temp/prod
+COPY package.json bun.lock* /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Copy source code
+# ---- build ----
+FROM base AS build
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
+ENV NODE_ENV=development
+ENV PUBLIC_LOG_LEVEL=info
+RUN bun run build
 
-# Build the application
-RUN npm run build
+# ---- release ----
+FROM base AS release
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=build /usr/src/app/build ./build
+COPY --from=build /usr/src/app/package.json ./
 
-# Production stage
-FROM node:20-alpine AS runner
+ENV ORIGIN='http://localhost:7777'
+ENV BODY_SIZE_LIMIT='Infinity'
 
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 sveltekit
-
-# Copy built assets
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/package*.json ./
-
-# Install production dependencies only
-RUN npm ci --omit=dev
-
-# Change ownership
-RUN chown -R sveltekit:nodejs /app
-USER sveltekit
-
-# Configurable port - set at runtime with -e PORT
-EXPOSE ${PORT:-7777}
-
-ENV HOST=0.0.0.0
-ENV PORT=${PORT:-7777}
-
-CMD ["node", "build"]
+USER bun
+EXPOSE 7777
+CMD ["bun", "build/index.js"]

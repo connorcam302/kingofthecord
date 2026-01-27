@@ -2,11 +2,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import { parseReplay } from './utils/parseReplay';
 import { connectToDatabase, insertMatch, matchExists } from './server/mongodb';
+import { createLogger } from './server/logger';
 
-const printLog = (message: string) => {
-	const date = new Date().toISOString();
-	console.log(`[${date}] ${message}`);
-};
+const log = createLogger('processReplays');
 
 const processReplays = async () => {
 	const demosDir = path.resolve(process.cwd(), 'src/lib/demos');
@@ -14,6 +12,8 @@ const processReplays = async () => {
 	try {
 		await connectToDatabase();
 		const files = await fs.readdir(demosDir);
+
+		log.info({ dir: demosDir, fileCount: files.length }, 'Reading demos directory');
 
 		const results = [];
 
@@ -24,36 +24,36 @@ const processReplays = async () => {
 				try {
 					const exists = await matchExists(id);
 					if (exists) {
-						printLog(`Skipping replay ID ${id}: Already exists in MongoDB.`);
+						log.info({ id }, 'Skipping replay: Already exists in MongoDB');
 						results.push({ id, status: 'skipped', reason: 'Already exists in MongoDB' });
 						continue;
 					}
 				} catch (error) {
-					printLog(`Error checking if match exists for ID ${id}: ${error}`);
+					log.error({ id, error }, 'Error checking if match exists');
 				}
 
 				try {
-					printLog(`Parsing replay with ID ${id}...`);
+					log.info({ id }, 'Parsing replay');
 					const parsedData = parseReplay(id);
 
 					if (typeof parsedData === 'object' && parsedData !== null) {
 						await insertMatch(parsedData);
-						printLog(`Successfully stored match ${id} in MongoDB.`);
+						log.info({ id }, 'Successfully stored match in MongoDB');
 						results.push({ id, status: 'processed', reason: null });
 					} else {
-						printLog(`Invalid parsed data for replay ID ${id}: ${parsedData}`);
+						log.warn({ id, parsedData }, 'Invalid parsed data for replay');
 						results.push({ id, status: 'failed', reason: 'Invalid parsed data' });
 					}
-				} catch (error: any) {
-					printLog(`Error processing replay ID ${id}: ${error}`);
-					results.push({ id, status: 'failed', reason: error.message });
+				} catch (error) {
+					log.error({ id, error }, 'Error processing replay');
+					results.push({ id, status: 'failed', reason: (error as Error).message });
 				}
 			}
 		}
 
-		printLog(`Replay processing complete. Processed ${results.length} replays.`);
-	} catch (error: any) {
-		printLog(`Error in replay processing: ${error}`);
+		log.info({ processedCount: results.length }, 'Replay processing complete');
+	} catch (error) {
+		log.error({ error }, 'Error in replay processing');
 	}
 };
 

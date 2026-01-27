@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongodb:
+    build:
+      context: .
+      dockerfile: Dockerfile.mongodb
+    container_name: kingofthecord-mongodb
+    restart: unless-stopped
+    ports:
+      - '${MONGODB_PORT:-27017}:27017'
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGODB_DB:-kingofthecord}
+    networks:
+      - kingofthecord-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kingofthecord-app
+    restart: unless-stopped
+    ports:
+      - '7777:7777'
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DB=${MONGODB_DB:-kingofthecord}
+      - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-debug}
+      - ORIGIN=${ORIGIN:-http://localhost:7777}
+      - PORT=${PORT:-7777}
+      - BODY_SIZE_LIMIT=Infinity
+    depends_on:
+      - mongodb
+    networks:
+      - kingofthecord-network
+
+networks:
+  kingofthecord-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

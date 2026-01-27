@@ -17,8 +17,6 @@
 			('00' + (Math.floor(ticks / 64) % 60)).slice(-2)
 		);
 	};
-
-	console.log(data);
 </script>
 
 <svelte:head>

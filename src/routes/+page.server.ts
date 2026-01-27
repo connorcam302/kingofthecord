@@ -43,8 +43,6 @@ export const load = async ({ params }) => {
 
 	const calculateAvgHLTVRating = (array) => {
 		array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-		console.log(array.map((stat) => stat.hltvRating));
-		console.log(removeBestAndWorstTenPercent(array).map((stat) => stat.hltvRating));
 		return (
 			removeBestAndWorstTenPercent(array).reduce((total, stat) => total + stat.hltvRating, 0) /
 			removeBestAndWorstTenPercent(array).length
@@ -108,8 +106,6 @@ export const load = async ({ params }) => {
 			}
 		});
 
-		console.log(player.name);
-
 		const allHltvRatings = mapStats.map((stat) => stat.hltvRating).sort((a, b) => b - a);
 		// get hltv rating without the most recent game, most recent is the game with the highest timestamp
 
@@ -119,14 +115,6 @@ export const load = async ({ params }) => {
 					return currentObj.lobbyInfo.timestamp > maxObj.lobbyInfo.timestamp ? currentObj : maxObj;
 				})
 				.playerStats.filter((playerStat) => playerStat.steamid === player.steamid).length > 0;
-
-		console.log(
-			latestSeasonMatches
-				.reduce((maxObj, currentObj) => {
-					return currentObj.lobbyInfo.timestamp > maxObj.lobbyInfo.timestamp ? currentObj : maxObj;
-				})
-				.playerStats.filter((playerStat) => playerStat.steamid === player.steamid).length
-		);
 
 		let oldHltvRatings;
 		if (playerInMostRecent) {

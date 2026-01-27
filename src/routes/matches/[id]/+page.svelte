@@ -34,8 +34,6 @@
 
 	let duelPlayer1 = $state(matchData.playerStats[0]);
 	let duelPlayer2 = $state(matchData.playerStats.filter((x: any) => x.team_number !== teamOne)[0]);
-
-	console.log(data);
 </script>
 
 <svelte:head>

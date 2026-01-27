@@ -39,8 +39,6 @@
 	};
 
 	const matches = $derived(filterMatches(matchData, mapFilter, playerFilter, seasonFilter));
-
-	console.log(matchData);
 </script>
 
 <svelte:head>

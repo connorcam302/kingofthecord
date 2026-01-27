@@ -27,7 +27,6 @@
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
-	console.log(data);
 
 	const { stats, hltvTimeline, maps, duels } = data;
 
@@ -161,8 +160,6 @@
 			})
 			.filter((x) => x.name !== undefined)
 			.sort((a, b) => b.duels - a.duels);
-
-		console.log(duelStats);
 		return duelStats;
 	};
 

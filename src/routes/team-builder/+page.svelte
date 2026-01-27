@@ -30,18 +30,15 @@
 	let newPlayerRating = $state();
 
 	const addPlayer = (name: string, rating: number) => {
-		console.log(name, rating);
 		extraPlayers = [...extraPlayers, { name: name, avg_hltvRating: rating }];
 	};
 
 	let searchText = $state('');
 	const filterPlayers = () => {
 		if (searchText !== '') {
-			console.log('filtering on:', searchText);
 			playerList = playerStats
 				.filter((player) => player.name.toLowerCase().includes(searchText.toLowerCase()))
 				.sort((a, b) => a.name.localeCompare(b.name));
-			console.log(playerList);
 		} else {
 			playerList = playerStats.sort((a, b) => a.name.localeCompare(b.name));
 		}
@@ -133,12 +130,6 @@
 			icon: Check
 		});
 	};
-
-	$effect(() => {
-		console.log(pool);
-		console.log(playerList);
-		console.log(extraPlayers);
-	});
 </script>
 
 <svelte:head>

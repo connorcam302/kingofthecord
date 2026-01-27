@@ -38,8 +38,6 @@ export const load = async ({ params }) => {
 
 	const calculateAvgHLTVRating = (array) => {
 		array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-		console.log(array.map((stat) => stat.hltvRating));
-		console.log(removeBestAndWorstTenPercent(array).map((stat) => stat.hltvRating));
 		return (
 			removeBestAndWorstTenPercent(array).reduce((total, stat) => total + stat.hltvRating, 0) /
 			removeBestAndWorstTenPercent(array).length

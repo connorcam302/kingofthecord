@@ -18,6 +18,7 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 ENV NODE_ENV=development
 ENV PUBLIC_LOG_LEVEL=info
+ENV PUBLIC_ORIGIN='http://localhost:7777'
 RUN bun run build
 
 # ---- release ----
@@ -26,8 +27,6 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/package.json ./
 
-ENV ORIGIN='http://localhost:7777'
-ENV PUBLIC_ORIGIN='http://localhost:7777'
 ENV BODY_SIZE_LIMIT='Infinity'
 
 USER bun

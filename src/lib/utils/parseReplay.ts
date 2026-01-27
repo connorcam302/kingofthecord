@@ -6,7 +6,6 @@ import {
 	parsePlayerInfo,
 	parseTicks
 } from '@laihoe/demoparser2';
-import path from 'path';
 
 export interface DamageEvent {
 	armor: number;
@@ -59,7 +58,7 @@ const matchDates = [
 ];
 
 export const parseReplay = (id: string) => {
-	const filePath = path.resolve(process.cwd(), `src/lib/demos/${id}.dem`).toString();
+	const filePath = `/tmp/demos/${id}.dem`;
 
 	const gameEndTick = Math.max(...parseEvent(filePath, 'round_end').map((x) => x.tick));
 

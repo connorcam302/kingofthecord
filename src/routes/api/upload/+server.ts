@@ -9,6 +9,11 @@ const log = (message: string) => {
 	console.log(`[${date}] ${message}`);
 };
 
+const logError = (message: string, error: unknown) => {
+	const date = new Date().toISOString();
+	console.error(`[${date}] ${message}`, error);
+};
+
 export const GET: RequestHandler = async () => {
 	return json({
 		uploadUrl: '/api/upload',
@@ -26,10 +31,27 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ reason: 'No files provided' }, { status: 400 });
 	}
 
-	const demosDir = path.resolve(process.cwd(), 'src/lib/demos');
-	await fs.mkdir(demosDir, { recursive: true });
+	const demosDir = '/tmp/demos';
+	log(`Demos directory: ${demosDir}`);
 
-	await connectToDatabase();
+	try {
+		await fs.mkdir(demosDir, { recursive: true });
+		log(`Created/verified demos directory`);
+	} catch (error) {
+		logError('Failed to create demos directory', error);
+		return json(
+			{ reason: 'Failed to create storage directory', error: String(error) },
+			{ status: 500 }
+		);
+	}
+
+	try {
+		await connectToDatabase();
+		log('Connected to MongoDB');
+	} catch (error) {
+		logError('Failed to connect to MongoDB', error);
+		return json({ reason: 'Database connection failed', error: String(error) }, { status: 500 });
+	}
 
 	const results = [];
 
@@ -46,19 +68,21 @@ export const POST: RequestHandler = async ({ request }) => {
 				}
 
 				const filePath = path.join(demosDir, `${filename}.dem`);
-				log(`Saving replay ${filename}.dem...`);
+				log(`Saving replay ${filename}.dem to ${filePath}...`);
 				const buffer = await file.arrayBuffer();
 				await fs.writeFile(filePath, Buffer.from(buffer));
+				log(`Successfully saved ${filename}.dem (${buffer.byteLength} bytes)`);
 
 				log(`Parsing replay ${filename}...`);
 				const parsedData = parseReplay(filename);
+				log(`Successfully parsed ${filename}`);
 
 				log(`Inserting match ${filename} into MongoDB...`);
 				await insertMatch(parsedData);
 				log(`Successfully processed replay ${filename}`);
 				results.push({ id: file.name, status: 'processed' });
 			} catch (error) {
-				log(`Error processing replay ${filename}: ${error}`);
+				logError(`Error processing replay ${filename}`, error);
 				results.push({ id: file.name, status: 'failed', reason: (error as Error).message });
 			}
 		}

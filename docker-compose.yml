@@ -29,6 +29,7 @@ services:
       - MONGODB_DB=${MONGODB_DB:-kingofthecord}
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-debug}
       - ORIGIN=${ORIGIN:-http://localhost:7777}
+      - PUBLIC_ORIGIN=${ORIGIN:-http://localhost:7777}
       - PORT=${PORT:-7777}
       - BODY_SIZE_LIMIT=Infinity
     depends_on:

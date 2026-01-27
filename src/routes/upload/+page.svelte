@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Upload } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
+	import { PUBLIC_ORIGIN } from '$env/static/public';
 
 	let {
 		form
@@ -26,8 +27,10 @@
 			formData.append('replays', file);
 		}
 
+		console.log('beginning file upload');
+
 		try {
-			const response = await fetch('/api/upload', {
+			const response = await fetch(`${PUBLIC_ORIGIN}/api/upload`, {
 				method: 'POST',
 				body: formData
 			});

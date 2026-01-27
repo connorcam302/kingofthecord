@@ -27,6 +27,7 @@ COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/package.json ./
 
 ENV ORIGIN='http://localhost:7777'
+ENV PUBLIC_ORIGIN='http://localhost:7777'
 ENV BODY_SIZE_LIMIT='Infinity'
 
 USER bun

@@ -27,25 +27,6 @@ export const load = async ({ params }) => {
 		return Object.values(uniquePlayers);
 	};
 
-	const removeBestAndWorstTenPercent = (array) => {
-		if (array.length < 10) {
-			return array;
-		} else {
-			array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-			const removeCount = Math.floor(array.length * 0.1);
-			const newArray = array.slice(removeCount, -1 * removeCount);
-			return array.slice(removeCount, -1 * removeCount);
-		}
-	};
-
-	const calculateAvgHLTVRating = (array) => {
-		array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-		return (
-			removeBestAndWorstTenPercent(array).reduce((total, stat) => total + stat.hltvRating, 0) /
-			removeBestAndWorstTenPercent(array).length
-		);
-	};
-
 	const playerList = (
 		await getUniquePlayers(latestSeasonMatches.map((match) => match.playerStats))
 	).filter((player) => activeSteamids.includes(player.steamid));
@@ -95,25 +76,30 @@ export const load = async ({ params }) => {
 
 		let oldHltvRatings;
 		if (playerInMostRecent) {
-			oldHltvRatings = removeBestAndWorstTenPercent(
-				mapStats
-					.slice()
-					.sort((a, b) => a.timestamp - b.timestamp)
-					.slice(0, -1)
-			)
+			oldHltvRatings = mapStats
+				.slice()
+				.sort((a, b) => a.timestamp - b.timestamp)
+				.slice(0, -1)
 				.map((stat) => stat.hltvRating)
 				.sort((a, b) => b - a);
 		} else {
-			oldHltvRatings = removeBestAndWorstTenPercent(
-				mapStats.slice().sort((a, b) => a.timestamp - b.timestamp)
-			)
+			oldHltvRatings = mapStats
+				.slice()
+				.sort((a, b) => a.timestamp - b.timestamp)
 				.map((stat) => stat.hltvRating)
 				.sort((a, b) => b - a);
 		}
 
-		const hltvRatings = removeBestAndWorstTenPercent(mapStats)
-			.map((stat) => stat.hltvRating)
-			.sort((a, b) => b - a);
+		const hltvRatings = mapStats.map((stat) => stat.hltvRating).sort((a, b) => b - a);
+
+		const oldAvg =
+			oldHltvRatings.length > 0
+				? oldHltvRatings.reduce((total, stat) => total + stat, 0) / oldHltvRatings.length
+				: 0;
+		const newAvg =
+			hltvRatings.length > 0
+				? hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length
+				: 0;
 
 		playerStats.push({
 			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
@@ -129,24 +115,12 @@ export const load = async ({ params }) => {
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
 			flashes: mapStats.reduce((total, stat) => total + stat.enemies_flashed_total, 0),
-			avg_hltvRating: hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length,
-			old_avg_hltvRating:
-				oldHltvRatings.reduce((total, stat) => total + stat, 0) / oldHltvRatings.length,
+			avg_hltvRating: newAvg,
+			old_avg_hltvRating: oldAvg,
 			old_hltv_ratings: oldHltvRatings,
 			hltv_ratings: hltvRatings,
 			all_hltv_ratings: allHltvRatings,
-			ratingChange:
-				hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length -
-				removeBestAndWorstTenPercent(
-					mapStats
-						.slice()
-						.sort((a, b) => a.timestamp - b.timestamp)
-						.slice(0, -1)
-				)
-					.map((stat) => stat.hltvRating)
-					.sort((a, b) => b - a)
-					.reduce((total, stat) => total + stat, 0) /
-					oldHltvRatings.length
+			ratingChange: newAvg - oldAvg
 		});
 	});
 

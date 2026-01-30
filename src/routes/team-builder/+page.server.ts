@@ -1,4 +1,9 @@
-import { getLatestSeason, getMatchesBySeason, getActiveSteamids } from '$lib/server/mongodb';
+import {
+	getLatestSeason,
+	getMatchesBySeason,
+	getActiveSteamids,
+	getUserName
+} from '$lib/server/mongodb';
 import { calculatePlayerRating } from '$lib/utils';
 
 export const load = async ({ params }) => {
@@ -13,7 +18,7 @@ export const load = async ({ params }) => {
 			game.forEach((player) => {
 				if (!uniquePlayers[player.steamid]) {
 					uniquePlayers[player.steamid] = {
-						name: player.name,
+						name: player.steamid,
 						steamid: player.steamid
 					};
 				}
@@ -28,10 +33,10 @@ export const load = async ({ params }) => {
 		(player) => activeSteamids.includes(player.steamid)
 	);
 
-	playerList.forEach((player) => {
+	for (const player of playerList) {
 		const mapStats = [];
 
-		matchData.forEach((match) => {
+		for (const match of matchData) {
 			const playerMatchData = match.playerStats.find(
 				(playerStat) => playerStat.steamid === player.steamid
 			);
@@ -57,11 +62,12 @@ export const load = async ({ params }) => {
 					isWinningTeam
 				});
 			}
-		});
+		}
 
 		playerStats.push({
 			mapStats,
 			...player,
+			name: await getUserName(player.steamid),
 			kpr: mapStats.reduce((total, stat) => total + stat.kpr, 0) / mapStats.length,
 			dpr: mapStats.reduce((total, stat) => total + stat.dpr, 0) / mapStats.length,
 			apr: mapStats.reduce((total, stat) => total + stat.apr, 0) / mapStats.length,
@@ -74,7 +80,7 @@ export const load = async ({ params }) => {
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
 			avg_hltvRating: mapStats.reduce((total, stat) => total + stat.hltvRating, 0) / mapStats.length
 		});
-	});
+	}
 
 	return {
 		playerStats

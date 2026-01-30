@@ -1,5 +1,5 @@
 import { fetchMatches, getAllMatchIds, getPlayerName } from '$lib/server/privateUtils';
-import { calculateHLTVRating, calculateImpact } from '$lib/utils';
+import { calculatePlayerRating } from '$lib/utils';
 import { getActiveSteamids } from '$lib/server/mongodb';
 
 export const load = async ({ params }) => {
@@ -7,7 +7,6 @@ export const load = async ({ params }) => {
 	const matchIdList = await getAllMatchIds();
 	const activeSteamids = await getActiveSteamids();
 
-	// Function to extract unique players with their steamid
 	const getUniquePlayers = async (games) => {
 		const uniquePlayers = {};
 
@@ -31,7 +30,6 @@ export const load = async ({ params }) => {
 		} else {
 			array = array.sort((a, b) => b.hltvRating - a.hltvRating);
 			const removeCount = Math.floor(array.length * 0.1);
-			const newArray = array.slice(removeCount, -1 * removeCount);
 			return array.slice(removeCount, -1 * removeCount);
 		}
 	};
@@ -59,13 +57,7 @@ export const load = async ({ params }) => {
 			);
 
 			if (playerMatchData) {
-				const kpr = playerMatchData.kills_total / match.rounds.length;
-				const dpr = playerMatchData.deaths_total / match.rounds.length;
-				const apr = playerMatchData.assists_total / match.rounds.length;
-				const adr = playerMatchData.damage_total / match.rounds.length;
-				const deaths = playerMatchData.deaths_total;
-				const survivalRate = (match.rounds.length - deaths) / match.rounds.length;
-				const impact = calculateImpact(playerMatchData);
+				const ratingData = calculatePlayerRating(playerMatchData, match.rounds.length);
 
 				const playerTeam = match.playerStats.find(
 					(playerStat) => playerStat.steamid === player.steamid
@@ -79,23 +71,10 @@ export const load = async ({ params }) => {
 
 				const isWinningTeam = playerTeam === winningTeam;
 
-				const rawHltv = { kpr, dpr, apr, impact, adr, survivalRate };
-
-				const hltvRating = calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate);
 				mapStats.push({
 					...playerMatchData,
-					rawHltv,
-					hltvRating,
+					...ratingData,
 					isWinningTeam,
-					hltvRatingRaw: {
-						kpr,
-						dpr,
-						apr,
-						impact,
-						adr,
-						survivalRate,
-						rounds: match.playerStats.length
-					},
 					timestamp: match.lobbyInfo.timestamp,
 					map: match.lobbyInfo.map_name
 				});
@@ -103,6 +82,8 @@ export const load = async ({ params }) => {
 		});
 
 		const allHltvRatings = mapStats.map((stat) => stat.hltvRating).sort((a, b) => b - a);
+
+		const recentGames = mapStats.sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
 
 		const playerInMostRecent =
 			matchData
@@ -147,7 +128,6 @@ export const load = async ({ params }) => {
 		const getHighestAndLowestAvgRating = (mapStats) => {
 			const mapRatings = {};
 
-			// Group hltvRating by map
 			mapStats.forEach((match) => {
 				const mapName = match.map;
 				if (!mapRatings[mapName]) {
@@ -157,13 +137,11 @@ export const load = async ({ params }) => {
 				mapRatings[mapName].count += 1;
 			});
 
-			// Calculate average ratings
 			const avgRatings = Object.entries(mapRatings).map(([map, data]) => ({
 				map,
 				avgRating: data.totalRating / data.count
 			}));
 
-			// Find highest and lowest average rating
 			const highestMap = avgRatings.reduce((a, b) => (a.avgRating > b.avgRating ? a : b)).map;
 			const lowestMap = avgRatings.reduce((a, b) => (a.avgRating < b.avgRating ? a : b)).map;
 
@@ -175,12 +153,11 @@ export const load = async ({ params }) => {
 		playerStats.push({
 			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
 			...player,
-			kpr: mapStats.reduce((total, stat) => total + stat.rawHltv.kpr, 0) / mapStats.length,
-			dpr: mapStats.reduce((total, stat) => total + stat.rawHltv.dpr, 0) / mapStats.length,
-			apr: mapStats.reduce((total, stat) => total + stat.rawHltv.apr, 0) / mapStats.length,
-			impact: mapStats.reduce((total, stat) => total + stat.rawHltv.impact, 0) / mapStats.length,
-			adr: mapStats.reduce((total, stat) => total + stat.rawHltv.adr, 0) / mapStats.length,
-			adr: mapStats.reduce((total, stat) => total + stat.rawHltv.adr, 0) / mapStats.length,
+			kpr: mapStats.reduce((total, stat) => total + stat.kpr, 0) / mapStats.length,
+			dpr: mapStats.reduce((total, stat) => total + stat.dpr, 0) / mapStats.length,
+			apr: mapStats.reduce((total, stat) => total + stat.apr, 0) / mapStats.length,
+			impact: recentGames.reduce((total, stat) => total + stat.impact, 0) / recentGames.length,
+			adr: mapStats.reduce((total, stat) => total + stat.adr, 0) / mapStats.length,
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0) / mapStats.length,
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0) / mapStats.length,
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0) / mapStats.length,
@@ -211,7 +188,6 @@ export const load = async ({ params }) => {
 					.reduce((total, stat) => total + stat, 0) /
 					oldHltvRatings.length,
 			form,
-			// matches are stored in mapStats, every mapStats has a map, map.map, get the players average rating for each map and retrn the highest and lowest average rating map
 			highestMap,
 			lowestMap
 		});

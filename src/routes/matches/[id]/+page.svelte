@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DataTable from './data-table.svelte';
+	import RatingBreakdown from './RatingBreakdown.svelte';
 	import { basicColumns, advancedColumns, ratingColumns } from './columns.js';
 	import { Button } from '$lib/components/ui/button';
 	import { getMapString, getNameById } from '$lib/utils';
@@ -19,6 +20,7 @@
 	let selectedRound = $state(matchData.rounds[0]);
 	let selectedPlayer = $state(matchData.rounds[0].damage[0]);
 	let selectedTimeline = $state(matchData.rounds[0].damage[0].damage_dealt[0]);
+	let selectedBreakdownPlayer = $state(matchData.playerStats[0]);
 
 	const changeSelectedPlayer = (player: any) => {
 		selectedPlayer = player;
@@ -78,8 +80,12 @@
 					onclick={() => (firstTab = 'advanced')}>Advanced</Button
 				>
 				<Button
-					variant={firstTab === 'advanced' ? 'secondary' : 'outline'}
+					variant={firstTab === 'rating' ? 'secondary' : 'outline'}
 					onclick={() => (firstTab = 'rating')}>Rating</Button
+				>
+				<Button
+					variant={firstTab === 'breakdown' ? 'secondary' : 'outline'}
+					onclick={() => (firstTab = 'breakdown')}>Rating Breakdown</Button
 				>
 			</div>
 			{#await matchData}
@@ -137,6 +143,29 @@
 										};
 									})}
 								columns={ratingColumns}
+							/>
+						</div>
+					{:else if firstTab === 'breakdown'}
+						<div class="flex flex-col gap-4">
+							<div class="flex flex-wrap gap-2">
+								<div class="text-lg font-medium">Select Player:</div>
+								<div class="flex flex-wrap gap-2">
+									{#each matchData.playerStats.sort( (a, b) => a.name.localeCompare(b.name) ) as player}
+										<Button
+											class="rounded-lg px-3 py-1 transition-colors"
+											variant={selectedBreakdownPlayer.steamid === 'player.steamid'
+												? 'secondary'
+												: 'outline'}
+											onclick={() => (selectedBreakdownPlayer = player)}
+										>
+											{player.name}
+										</Button>
+									{/each}
+								</div>
+							</div>
+							<RatingBreakdown
+								player={selectedBreakdownPlayer}
+								rating={selectedBreakdownPlayer.hltvRating}
 							/>
 						</div>
 					{/if}

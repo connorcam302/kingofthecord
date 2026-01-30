@@ -1,5 +1,5 @@
 import { fetchMatches, getAllMatchIds, getPlayerName } from '$lib/server/privateUtils';
-import { calculateHLTVRating, calculateImpact } from '$lib/utils';
+import { calculatePlayerRating } from '$lib/utils';
 import { getLatestSeason, getActiveSteamids, getMatchesBySeason } from '$lib/server/mongodb';
 
 export const load = async ({ params }) => {
@@ -8,10 +8,8 @@ export const load = async ({ params }) => {
 	const matchIdList = await getAllMatchIds();
 	const activeSteamids = await getActiveSteamids();
 
-	// Filter to only latest season after names are populated
 	const latestSeasonMatches = matchData.filter((m) => m.season === latestSeason);
 
-	// Function to extract unique players with their steamid
 	const getUniquePlayers = async (games) => {
 		const uniquePlayers = {};
 
@@ -26,7 +24,6 @@ export const load = async ({ params }) => {
 			}
 		}
 
-		// Convert the object back into an array
 		return Object.values(uniquePlayers);
 	};
 
@@ -64,13 +61,7 @@ export const load = async ({ params }) => {
 			);
 
 			if (playerMatchData) {
-				const kpr = playerMatchData.kills_total / match.rounds.length;
-				const dpr = playerMatchData.deaths_total / match.rounds.length;
-				const apr = playerMatchData.assists_total / match.rounds.length;
-				const adr = playerMatchData.damage_total / match.rounds.length;
-				const deaths = playerMatchData.deaths_total;
-				const survivalRate = (match.rounds.length - deaths) / match.rounds.length;
-				const impact = calculateImpact(playerMatchData);
+				const ratingData = calculatePlayerRating(playerMatchData, match.rounds.length);
 
 				const playerTeam = match.playerStats.find(
 					(playerStat) => playerStat.steamid === player.steamid
@@ -84,30 +75,16 @@ export const load = async ({ params }) => {
 
 				const isWinningTeam = playerTeam === winningTeam;
 
-				const rawHltv = { kpr, dpr, apr, impact, adr, survivalRate };
-
-				const hltvRating = calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate);
 				mapStats.push({
 					...playerMatchData,
-					rawHltv,
-					hltvRating,
+					...ratingData,
 					isWinningTeam,
-					hltvRatingRaw: {
-						kpr,
-						dpr,
-						apr,
-						impact,
-						adr,
-						survivalRate,
-						rounds: match.playerStats.length
-					},
 					timestamp: match.lobbyInfo.timestamp
 				});
 			}
 		});
 
 		const allHltvRatings = mapStats.map((stat) => stat.hltvRating).sort((a, b) => b - a);
-		// get hltv rating without the most recent game, most recent is the game with the highest timestamp
 
 		const playerInMostRecent =
 			latestSeasonMatches
@@ -141,15 +118,13 @@ export const load = async ({ params }) => {
 		playerStats.push({
 			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
 			...player,
-			rawHltv: {
-				kpr: mapStats.reduce((total, stat) => total + stat.rawHltv.kpr, 0) / mapStats.length,
-				dpr: mapStats.reduce((total, stat) => total + stat.rawHltv.dpr, 0) / mapStats.length,
-				apr: mapStats.reduce((total, stat) => total + stat.rawHltv.apr, 0) / mapStats.length,
-				impact: mapStats.reduce((total, stat) => total + stat.rawHltv.impact, 0) / mapStats.length,
-				adr: mapStats.reduce((total, stat) => total + stat.rawHltv.adr, 0) / mapStats.length,
-				survivalRate:
-					mapStats.reduce((total, stat) => total + stat.rawHltv.survivalRate, 0) / mapStats.length
-			},
+			kpr: mapStats.reduce((total, stat) => total + stat.kpr, 0) / mapStats.length,
+			dpr: mapStats.reduce((total, stat) => total + stat.dpr, 0) / mapStats.length,
+			apr: mapStats.reduce((total, stat) => total + stat.apr, 0) / mapStats.length,
+			impact: mapStats.reduce((total, stat) => total + stat.impact, 0) / mapStats.length,
+			adr: mapStats.reduce((total, stat) => total + stat.adr, 0) / mapStats.length,
+			survivalRate:
+				mapStats.reduce((total, stat) => total + stat.survivalRate, 0) / mapStats.length,
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),

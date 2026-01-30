@@ -1,10 +1,5 @@
-import {
-	calculateADR,
-	calculateHLTVRating,
-	calculateImpact,
-	calculateSurvivalRate
-} from '$lib/utils';
 import { getMatchById, getUserName } from '$lib/server/mongodb';
+import { calculatePlayerRating } from '$lib/utils';
 
 export const load = async ({ params }) => {
 	const matchData = await getMatchById(params.id);
@@ -22,25 +17,10 @@ export const load = async ({ params }) => {
 		...matchData,
 		playerStats: matchData.playerStats
 			.map((playerStat) => {
-				const kpr = playerStat.kills_total / rounds;
-				const dpr = playerStat.deaths_total / rounds;
-				const apr = playerStat.assists_total / rounds;
-				const adr = playerStat.damage_total / rounds;
-				const deaths = playerStat.deaths_total;
-				const survivalRate = (rounds - deaths) / rounds;
-				const impact = calculateImpact(playerStat);
-
+				const ratingData = calculatePlayerRating(playerStat, rounds);
 				return {
 					...playerStat,
-					rawHLTVRating: {
-						kpr: kpr.toFixed(2),
-						dpr: dpr.toFixed(2),
-						apr: apr.toFixed(2),
-						impact,
-						adr: adr.toFixed(2),
-						survivalRate: survivalRate.toFixed(2)
-					},
-					hltvRating: calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate)
+					...ratingData
 				};
 			})
 			.sort((a, b) => b.hltvRating - a.hltvRating)

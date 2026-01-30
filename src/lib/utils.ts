@@ -1,3 +1,4 @@
+import pino from 'pino';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { PUBLIC_LOG_LEVEL } from '$env/static/public';
@@ -7,69 +8,85 @@ export function cn(...inputs: ClassValue[]) {
 }
 //
 export const getMapString = (map: string) => {
-	//remove de_ from the start, capitalise first character after de_ and if there is a number put a space before it
 	return (
 		map.replace('de_', '').charAt(0).toUpperCase() +
 		map.replace('de_', '').slice(1).replace(/[0-9]/g, ' $&')
 	);
 };
 
+export const ratingWeights = {
+	kpr: 0.3,
+	dpr: 0.1,
+	apr: 0.1,
+	impact: 0.2,
+	adr: 0.25,
+	survivalRate: 0.05
+};
+
+export const ratingNormalization = {
+	kpr: 0.65,
+	dpr: 0.65,
+	apr: 0.25,
+	impactMultiplier: 20,
+	adr: 80,
+	survivalRate: 0.35
+};
+
 export const calculateHLTVRating = (
-	killsPerRound,
-	deathsPerRound,
-	assistsPerRound,
-	impact,
-	adr, // Average Damage per Round
-	survivalRate
+	killsPerRound: number,
+	deathsPerRound: number,
+	assistsPerRound: number,
+	impactPerRound: number,
+	adr: number,
+	survivalRate: number
 ) => {
-	const weights = {
-		kpr: 0.35, // Kills Per Round
-		dpr: 0.15, // Deaths Per Round (negative weight because lower is better)
-		apr: 0.1, // Assists Per Round
-		impact: 0.2, // Impact Rating
-		adr: 0.2, // Average Damage per Round
-		survivalRate: 0.1 // Survival Rate
-	};
-
-	// Normalize inputs to a scale similar to HLTV's (around 1.00 as average)
 	const normalized = {
-		kpr: killsPerRound / 0.75, // Average KPR is about 0.75
-		dpr: 1 - deathsPerRound / 0.65, // Average DPR is about 0.65
-		apr: assistsPerRound / 0.15, // Average APR is about 0.15
-		impact: impact / 1.0, // Impact is already normalized around 1.0
-		adr: adr / 80, // Average ADR is about 80
-		survivalRate: survivalRate / 0.35 // Average survival rate is around 35%
+		kpr: killsPerRound / ratingNormalization.kpr,
+		dpr: ratingNormalization.dpr / deathsPerRound,
+		apr: assistsPerRound / ratingNormalization.apr,
+		ipr: impactPerRound * ratingNormalization.impactMultiplier,
+		adr: adr / ratingNormalization.adr,
+		survivalRate: survivalRate / ratingNormalization.survivalRate
 	};
 
-	// Calculate weighted rating
 	const rating =
-		weights.kpr * normalized.kpr +
-		weights.dpr * normalized.dpr +
-		weights.apr * normalized.apr +
-		weights.impact * normalized.impact +
-		weights.adr * normalized.adr +
-		weights.survivalRate * normalized.survivalRate;
+		(ratingWeights.kpr * normalized.kpr +
+			ratingWeights.dpr * normalized.dpr +
+			ratingWeights.apr * normalized.apr +
+			ratingWeights.impact * normalized.ipr +
+			ratingWeights.adr * normalized.adr +
+			ratingWeights.survivalRate * normalized.survivalRate) *
+		1.15;
 
 	return parseFloat(rating.toFixed(2));
 };
 
-export const calculateDeathsPerRound = (deaths, rounds) => {
+export const calculateDeathsPerRound = (deaths: number, rounds: number) => {
 	return (deaths / rounds).toFixed(2);
 };
 
-export const calculateKillsPerRound = (kills, rounds) => {
+export const calculateKillsPerRound = (kills: number, rounds: number) => {
 	return (kills / rounds).toFixed(2);
 };
 
-export const calculateAssistsPerRound = (assists, rounds) => {
+export const calculateAssistsPerRound = (assists: number, rounds: number) => {
 	return (assists / rounds).toFixed(2);
 };
 
-export const calculateADR = (damage, rounds) => {
-	return (kills / rounds).toFixed(2);
+export const calculateADR = (damage: number, rounds: number) => {
+	return (damage / rounds).toFixed(2);
 };
 
-export const calculateImpact = (playerStats) => {
+export const calculateImpactPerRound = (impact: number, rounds: number) => {
+	return (impact / rounds).toFixed(2);
+};
+
+export const calculateImpact = (playerStats: {
+	twoK: number;
+	threeK: number;
+	fourK: number;
+	fiveK: number;
+}) => {
 	// Extract multikill data from playerStats
 	const { twoK, threeK, fourK, fiveK } = playerStats;
 
@@ -79,8 +96,69 @@ export const calculateImpact = (playerStats) => {
 	return impactScore;
 };
 
-export const calculateSurvivalRate = (roundsSurvived, rounds) => {
+export const calculateSurvivalRate = (roundsSurvived: number, rounds: number) => {
 	return (roundsSurvived / rounds).toFixed(2);
+};
+
+export type PlayerRatingData = {
+	kpr: number;
+	dpr: number;
+	apr: number;
+	adr: number;
+	impact: number;
+	survivalRate: number;
+	hltvRating: number;
+	rawHLTVRating: {
+		kpr: string;
+		dpr: string;
+		apr: string;
+		adr: string;
+		impact: number;
+		survivalRate: string;
+	};
+};
+
+export type PlayerMatchStats = {
+	kills_total: number;
+	deaths_total: number;
+	assists_total: number;
+	damage_total: number;
+	twoK?: number;
+	threeK?: number;
+	fourK?: number;
+	fiveK?: number;
+	roundsSurvived?: number;
+};
+
+export const calculatePlayerRating = (
+	playerStats: PlayerMatchStats,
+	rounds: number
+): PlayerRatingData => {
+	const kpr = playerStats.kills_total / rounds;
+	const dpr = playerStats.deaths_total / rounds;
+	const apr = playerStats.assists_total / rounds;
+	const adr = playerStats.damage_total / rounds;
+	const survivalRate = (rounds - playerStats.deaths_total) / rounds;
+	const impact = calculateImpact(playerStats) / rounds;
+	const hltvRating = calculateHLTVRating(kpr, dpr, apr, impact, adr, survivalRate);
+
+	return {
+		kpr,
+		dpr,
+		apr,
+		adr,
+		impact,
+		survivalRate,
+		hltvRating,
+		rawHLTVRating: {
+			kpr: kpr.toFixed(2),
+			dpr: dpr.toFixed(2),
+			apr: apr.toFixed(2),
+			adr: adr.toFixed(2),
+			impact,
+			survivalRate: survivalRate.toFixed(2)
+		}
+	};
 };
 
 export const getName = (player: { name: string; steamid: string }) => {
@@ -134,8 +212,6 @@ export const getNameById = (id: string) => {
 
 	return players[id] || false;
 };
-
-import pino from 'pino';
 
 const logger = pino({
 	level: PUBLIC_LOG_LEVEL || 'info',

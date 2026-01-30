@@ -104,9 +104,9 @@
 				}
 			} else if (sortedBy === 'ADR') {
 				if (sortDirection === 'asc') {
-					return a.rawHltv.adr - b.rawHltv.adr;
+					return a.adr - b.adr;
 				} else {
-					return b.rawHltv.adr - a.rawHltv.adr;
+					return b.adr - a.adr;
 				}
 			} else if (sortedBy === 'Rating') {
 				if (sortDirection === 'asc') {
@@ -198,7 +198,7 @@
 			</div>
 			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'ADR' }}>
 				<CrosshairIcon />
-				{stats.rawHltv.adr.toFixed(0)}
+				{stats.adr.toFixed(0)}
 			</div>
 			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'Rating' }}>
 				<CandlestickChart />
@@ -366,7 +366,7 @@
 											use:tippy={{ content: 'ADR' }}
 										>
 											<CrosshairIcon />
-											{match.rawHltv.adr.toFixed(0)}
+											{match.adr.toFixed(0)}
 										</div>
 										<div
 											class="flex w-32 items-center justify-end gap-1 text-lg"

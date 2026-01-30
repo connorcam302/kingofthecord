@@ -8,23 +8,29 @@ services:
     container_name: kingofthecord-app
     restart: unless-stopped
 
-    # IMPORTANT: Dokploy + Traefik do NOT need ports exposed
-    # Traefik talks to the container directly
+    # Traefik connects internally — do NOT publish ports
     expose:
       - "7777"
 
     environment:
-      - PORT=7777
-      - NODE_ENV=production
+      # Runtime
+      PORT: "7777"
+      NODE_ENV: "production"
+      BUN_ENV: "production"
 
-      # MongoDB (external / managed / Atlas / VPS)
-      - MONGODB_URI=${MONGODB_URI}
-      - MONGODB_DB=${MONGODB_DB:-kingofthecord}
+      # MongoDB
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DB: "kingofthecord"
+
+      # Upload service (unchanged)
+      UPLOAD_SERVICE_URL: "0.0.0.0:7776"
 
       # SvelteKit
-      - ORIGIN=https://kingofthecord.connorcampbell.dev
-      - PUBLIC_ORIGIN=https://kingofthecord.connorcampbell.dev
-      - PUBLIC_LOG_LEVEL=debug
+      BODY_SIZE_LIMIT: "Infinity"
+
+      # IMPORTANT: must match public URL behind Traefik
+      ORIGIN: "https://kingofthecord.connorcampbell.dev"
+      PUBLIC_ORIGIN: "https://kingofthecord.connorcampbell.dev"
 
     labels:
       - traefik.enable=true
@@ -34,7 +40,7 @@ services:
       - traefik.http.routers.kotc.entrypoints=websecure
       - traefik.http.routers.kotc.tls=true
 
-      # CRITICAL: explicitly override Dokploy defaults
+      # Explicit middleware override (fixes 403 POST + uploads)
       - traefik.http.routers.kotc.middlewares=redirect-to-https@file,upload-limit@file
 
       # Service

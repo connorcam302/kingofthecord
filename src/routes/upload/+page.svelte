@@ -3,6 +3,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Upload } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
+	import { createLogger } from '$lib/server/logger';
+
+	const log = createLogger('hooks');
 
 	let {
 		form
@@ -22,6 +25,8 @@
 
 		uploading = true;
 		const formEl = e.target as HTMLFormElement;
+
+		log.info('uploading file to /api/upload');
 
 		try {
 			const response = await fetch('/api/upload', {
@@ -57,7 +62,7 @@
 
 	<Card.Root class="mb-6">
 		<Card.Header>
-			<Card.Title>Replay Files</Card.Title>
+			<Card.Title>Replay Files.</Card.Title>
 			<Card.Description>Select your .dem files to parse and upload to the database</Card.Description
 			>
 		</Card.Header>

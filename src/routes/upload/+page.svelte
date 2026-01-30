@@ -3,7 +3,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Upload } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { PUBLIC_ORIGIN } from '$env/static/public';
 
 	let {
 		form
@@ -17,34 +16,23 @@
 	let selectedFiles = $state<FileList | null>(null);
 	let uploading = $state(false);
 
-	async function handleUpload() {
+	async function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
 		if (!selectedFiles || selectedFiles.length === 0) return;
 
 		uploading = true;
-
-		const formData = new FormData();
-		for (const file of selectedFiles) {
-			formData.append('replays', file);
-		}
-
-		console.log('beginning file upload');
+		const formEl = e.target as HTMLFormElement;
 
 		try {
-			const response = await fetch(`${PUBLIC_ORIGIN}/api/upload`, {
+			const response = await fetch('/api/upload', {
 				method: 'POST',
-				body: formData
+				body: new FormData(formEl)
 			});
 
 			const text = await response.text();
+			console.log('Upload response:', response.status, text.slice(0, 200));
 
-			let result;
-			try {
-				result = JSON.parse(text);
-			} catch {
-				form = { reason: `Server error (${response.status}): ${text.slice(0, 200)}`, results: [] };
-				uploading = false;
-				return;
-			}
+			const result = JSON.parse(text);
 
 			if (!response.ok) {
 				form = { reason: result.reason || 'Upload failed', results: [] };
@@ -52,6 +40,7 @@
 				form = { results: result.results };
 			}
 		} catch (error) {
+			console.error('Upload error:', error);
 			form = { reason: 'Network error: ' + String(error), results: [] };
 		} finally {
 			uploading = false;
@@ -73,13 +62,7 @@
 			>
 		</Card.Header>
 		<Card.Content>
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					handleUpload();
-				}}
-				class="space-y-4"
-			>
+			<form onsubmit={handleSubmit} enctype="multipart/form-data" class="space-y-4">
 				<div class="space-y-2">
 					<input
 						type="file"

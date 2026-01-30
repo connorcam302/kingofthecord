@@ -28,6 +28,8 @@ COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/package.json ./
 
 ENV BODY_SIZE_LIMIT='Infinity'
+ENV ORIGIN='http://localhost:7777'
+ENV PUBLIC_ORIGIN='http://localhost:7777'
 
 USER bun
 EXPOSE 7777

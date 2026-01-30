@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kingofthecord-app
+    restart: unless-stopped
+
+    # IMPORTANT: Dokploy + Traefik do NOT need ports exposed
+    # Traefik talks to the container directly
+    expose:
+      - "7777"
+
+    environment:
+      - PORT=7777
+      - NODE_ENV=production
+
+      # MongoDB (external / managed / Atlas / VPS)
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_DB=${MONGODB_DB:-kingofthecord}
+
+      # SvelteKit
+      - ORIGIN=https://kingofthecord.connorcampbell.dev
+      - PUBLIC_ORIGIN=https://kingofthecord.connorcampbell.dev
+      - PUBLIC_LOG_LEVEL=debug
+
+    labels:
+      - traefik.enable=true
+
+      # Router
+      - traefik.http.routers.kotc.rule=Host(`kingofthecord.connorcampbell.dev`)
+      - traefik.http.routers.kotc.entrypoints=websecure
+      - traefik.http.routers.kotc.tls=true
+
+      # CRITICAL: explicitly override Dokploy defaults
+      - traefik.http.routers.kotc.middlewares=redirect-to-https@file,upload-limit@file
+
+      # Service
+      - traefik.http.services.kotc.loadbalancer.server.port=7777

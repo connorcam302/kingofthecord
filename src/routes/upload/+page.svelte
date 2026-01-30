@@ -3,9 +3,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Upload } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { createLogger } from '$lib/server/logger';
-
-	const log = createLogger('hooks');
 
 	let {
 		form
@@ -26,7 +23,7 @@
 		uploading = true;
 		const formEl = e.target as HTMLFormElement;
 
-		log.info('uploading file to /api/upload');
+		console.log('uploading file to /api/upload');
 
 		try {
 			const response = await fetch('/api/upload', {

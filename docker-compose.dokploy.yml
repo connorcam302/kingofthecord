@@ -37,7 +37,7 @@ services:
 
       # Router
       - traefik.http.routers.kotc.rule=Host(`kingofthecord.connorcampbell.dev`)
-      - traefik.http.routers.kotc.entrypoints=websecure
+      - traefik.http.routers.kotc.entrypoints=web
       - traefik.http.routers.kotc.tls=true
 
       # Explicit middleware override (fixes 403 POST + uploads)

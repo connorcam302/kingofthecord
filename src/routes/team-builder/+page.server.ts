@@ -79,7 +79,10 @@ export const load = async ({ params }) => {
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
-			avg_hltvRating: mapStats.length > 0 ? calculateWeightedAvgRating(mapStats) : 0
+			avg_hltvRating:
+				mapStats.length > 0
+					? calculateWeightedAvgRating(mapStats.sort((a, b) => b.timestamp - a.timestamp))
+					: 0
 		});
 	}
 

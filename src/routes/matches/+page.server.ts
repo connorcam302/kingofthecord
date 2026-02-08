@@ -66,7 +66,7 @@ export const load = async ({ params }) => {
 					timestamp: match.lobbyInfo.timestamp
 				});
 			}
-		}
+		});
 
 		playerStats.push({
 			mapStats,

@@ -1,12 +1,23 @@
-import { fetchMatches, getAllMatchIds, getPlayerName } from '$lib/server/privateUtils';
-import { calculatePlayerRating } from '$lib/utils';
-import { getLatestSeason, getActiveSteamids, getMatchesBySeason } from '$lib/server/mongodb';
+import { fetchMatches, getAllMatchIds } from '$lib/server/privateUtils';
+import { calculatePlayerRating, calculateWeightedAvgRating } from '$lib/utils';
+import {
+	getLatestSeason,
+	getActiveSteamids,
+	getMatchesBySeason,
+	getUserName
+} from '$lib/server/mongodb';
 
 export const load = async ({ params }) => {
 	const latestSeason = await getLatestSeason();
 	const matchData = await fetchMatches();
 	const matchIdList = await getAllMatchIds();
 	const activeSteamids = await getActiveSteamids();
+
+	for (const match of matchData) {
+		for (const playerStat of match.playerStats) {
+			playerStat.name = await getUserName(playerStat.steamid);
+		}
+	}
 
 	const latestSeasonMatches = matchData.filter((m) => m.season === latestSeason);
 
@@ -17,7 +28,7 @@ export const load = async ({ params }) => {
 			for (const player of game) {
 				if (!uniquePlayers[player.steamid]) {
 					uniquePlayers[player.steamid] = {
-						name: await getPlayerName(player.steamid),
+						name: await getUserName(player.steamid),
 						steamid: player.steamid
 					};
 				}
@@ -67,39 +78,12 @@ export const load = async ({ params }) => {
 
 		const allHltvRatings = mapStats.map((stat) => stat.hltvRating).sort((a, b) => b - a);
 
-		const playerInMostRecent =
-			latestSeasonMatches
-				.reduce((maxObj, currentObj) => {
-					return currentObj.lobbyInfo.timestamp > maxObj.lobbyInfo.timestamp ? currentObj : maxObj;
-				})
-				.playerStats.filter((playerStat) => playerStat.steamid === player.steamid).length > 0;
+		const sortedStats = mapStats.sort((a, b) => b.timestamp - a.timestamp);
+		const hltvRatings = sortedStats;
+		const previous20Games = sortedStats.slice(1, 21);
 
-		let oldHltvRatings;
-		if (playerInMostRecent) {
-			oldHltvRatings = mapStats
-				.slice()
-				.sort((a, b) => a.timestamp - b.timestamp)
-				.slice(0, -1)
-				.map((stat) => stat.hltvRating)
-				.sort((a, b) => b - a);
-		} else {
-			oldHltvRatings = mapStats
-				.slice()
-				.sort((a, b) => a.timestamp - b.timestamp)
-				.map((stat) => stat.hltvRating)
-				.sort((a, b) => b - a);
-		}
-
-		const hltvRatings = mapStats.map((stat) => stat.hltvRating).sort((a, b) => b - a);
-
-		const oldAvg =
-			oldHltvRatings.length > 0
-				? oldHltvRatings.reduce((total, stat) => total + stat, 0) / oldHltvRatings.length
-				: 0;
-		const newAvg =
-			hltvRatings.length > 0
-				? hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length
-				: 0;
+		const newAvg = calculateWeightedAvgRating(hltvRatings);
+		const oldAvg = calculateWeightedAvgRating(previous20Games);
 
 		playerStats.push({
 			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
@@ -117,8 +101,8 @@ export const load = async ({ params }) => {
 			flashes: mapStats.reduce((total, stat) => total + stat.enemies_flashed_total, 0),
 			avg_hltvRating: newAvg,
 			old_avg_hltvRating: oldAvg,
-			old_hltv_ratings: oldHltvRatings,
-			hltv_ratings: hltvRatings,
+			old_hltv_ratings: previous20Games.map((s) => s.hltvRating),
+			hltv_ratings: hltvRatings.map((s) => s.hltvRating),
 			all_hltv_ratings: allHltvRatings,
 			ratingChange: newAvg - oldAvg
 		});

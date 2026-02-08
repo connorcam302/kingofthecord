@@ -172,7 +172,7 @@
 					match.rounds[match.rounds.length - 1].teamTwoScore}
 				<button
 					class="w-full overflow-hidden rounded-lg md:w-[42rem]"
-					style={`background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)), url('/maps/${match.lobbyInfo.map_name}.webp');background-size: cover; background-position: center;`}
+					style={`background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/maps/${match.lobbyInfo.map_name}.webp');background-size: cover; background-position: center;`}
 					onclick={() => goto(`/matches/${match.lobbyInfo.id}`)}
 				>
 					<div class="flex flex-col items-center gap-4 p-6">
@@ -182,7 +182,7 @@
 									{match.rounds[match.rounds.length - 1].teamOneScore}
 								</div>
 							</div>
-							<div class="text-3xl text-slate-500">-</div>
+							<div class="text-3xl">-</div>
 							<div class="flex items-center justify-center gap-4">
 								<div class="text-5xl font-bold">
 									{match.rounds[match.rounds.length - 1].teamTwoScore}

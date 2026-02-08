@@ -1,11 +1,12 @@
-import { fetchMatches, getAllMatchIds, getPlayerName } from '$lib/server/privateUtils';
-import { calculatePlayerRating } from '$lib/utils';
-import { getActiveSteamids } from '$lib/server/mongodb';
+import { fetchMatches, getAllMatchIds } from '$lib/server/privateUtils';
+import { calculatePlayerRating, calculateWeightedAvgRating } from '$lib/utils';
+import { getActiveSteamids, getUserName, getAllSeasons } from '$lib/server/mongodb';
 
 export const load = async ({ params }) => {
 	const matchData = await fetchMatches();
 	const matchIdList = await getAllMatchIds();
 	const activeSteamids = await getActiveSteamids();
+	const seasons = await getAllSeasons();
 
 	const getUniquePlayers = async (games) => {
 		const uniquePlayers = {};
@@ -14,7 +15,7 @@ export const load = async ({ params }) => {
 			for (const player of game) {
 				if (!uniquePlayers[player.steamid]) {
 					uniquePlayers[player.steamid] = {
-						name: await getPlayerName(player.steamid),
+						name: await getUserName(player.steamid),
 						steamid: player.steamid
 					};
 				}
@@ -22,24 +23,6 @@ export const load = async ({ params }) => {
 		}
 
 		return Object.values(uniquePlayers);
-	};
-
-	const removeBestAndWorstTenPercent = (array) => {
-		if (array.length < 10) {
-			return array;
-		} else {
-			array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-			const removeCount = Math.floor(array.length * 0.1);
-			return array.slice(removeCount, -1 * removeCount);
-		}
-	};
-
-	const calculateAvgHLTVRating = (array) => {
-		array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-		return (
-			removeBestAndWorstTenPercent(array).reduce((total, stat) => total + stat.hltvRating, 0) /
-			removeBestAndWorstTenPercent(array).length
-		);
 	};
 
 	const playerStats = [];
@@ -76,7 +59,8 @@ export const load = async ({ params }) => {
 					...ratingData,
 					isWinningTeam,
 					timestamp: match.lobbyInfo.timestamp,
-					map: match.lobbyInfo.map_name
+					map: match.lobbyInfo.map_name,
+					season: match.season
 				});
 			}
 		});
@@ -85,34 +69,9 @@ export const load = async ({ params }) => {
 
 		const recentGames = mapStats.sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
 
-		const playerInMostRecent =
-			matchData
-				.reduce((maxObj, currentObj) => {
-					return currentObj.lobbyInfo.timestamp > maxObj.lobbyInfo.timestamp ? currentObj : maxObj;
-				})
-				.playerStats.filter((playerStat) => playerStat.steamid === player.steamid).length > 0;
-
-		let oldHltvRatings;
-		if (playerInMostRecent) {
-			oldHltvRatings = removeBestAndWorstTenPercent(
-				mapStats
-					.slice()
-					.sort((a, b) => a.timestamp - b.timestamp)
-					.slice(0, -1)
-			)
-				.map((stat) => stat.hltvRating)
-				.sort((a, b) => b - a);
-		} else {
-			oldHltvRatings = removeBestAndWorstTenPercent(
-				mapStats.slice().sort((a, b) => a.timestamp - b.timestamp)
-			)
-				.map((stat) => stat.hltvRating)
-				.sort((a, b) => b - a);
-		}
-
-		const hltvRatings = removeBestAndWorstTenPercent(mapStats)
-			.map((stat) => stat.hltvRating)
-			.sort((a, b) => b - a);
+		const sortedStats = mapStats.sort((a, b) => b.timestamp - a.timestamp);
+		const hltvRatings = sortedStats;
+		const previous20Games = sortedStats.slice(20, 40);
 
 		const formGames = mapStats.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
 		const form = (
@@ -169,24 +128,13 @@ export const load = async ({ params }) => {
 				(mapStats.reduce((total, stat) => total + stat.isWinningTeam, 0) / mapStats.length) * 100,
 			matches: mapStats.length,
 			headshotPercentage,
-			avg_hltvRating: hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length,
-			old_avg_hltvRating:
-				oldHltvRatings.reduce((total, stat) => total + stat, 0) / oldHltvRatings.length,
-			old_hltv_ratings: oldHltvRatings,
-			hltv_ratings: hltvRatings,
+			avg_hltvRating: calculateWeightedAvgRating(hltvRatings),
+			old_avg_hltvRating: calculateWeightedAvgRating(previous20Games),
+			old_hltv_ratings: previous20Games.map((s) => s.hltvRating),
+			hltv_ratings: hltvRatings.map((s) => s.hltvRating),
 			all_hltv_ratings: allHltvRatings,
 			ratingChange:
-				hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length -
-				removeBestAndWorstTenPercent(
-					mapStats
-						.slice()
-						.sort((a, b) => a.timestamp - b.timestamp)
-						.slice(0, -1)
-				)
-					.map((stat) => stat.hltvRating)
-					.sort((a, b) => b - a)
-					.reduce((total, stat) => total + stat, 0) /
-					oldHltvRatings.length,
+				calculateWeightedAvgRating(hltvRatings) - calculateWeightedAvgRating(previous20Games),
 			form,
 			highestMap,
 			lowestMap
@@ -195,6 +143,7 @@ export const load = async ({ params }) => {
 
 	return {
 		matchData,
-		playerStats
+		playerStats,
+		seasons
 	};
 };

@@ -4,7 +4,7 @@ import {
 	getActiveSteamids,
 	getUserName
 } from '$lib/server/mongodb';
-import { calculatePlayerRating } from '$lib/utils';
+import { calculatePlayerRating, calculateWeightedAvgRating } from '$lib/utils';
 
 export const load = async ({ params }) => {
 	const latestSeason = await getLatestSeason();
@@ -59,7 +59,8 @@ export const load = async ({ params }) => {
 				mapStats.push({
 					...playerMatchData,
 					...ratingData,
-					isWinningTeam
+					isWinningTeam,
+					timestamp: match.lobbyInfo.timestamp
 				});
 			}
 		}
@@ -78,7 +79,7 @@ export const load = async ({ params }) => {
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
-			avg_hltvRating: mapStats.reduce((total, stat) => total + stat.hltvRating, 0) / mapStats.length
+			avg_hltvRating: mapStats.length > 0 ? calculateWeightedAvgRating(mapStats) : 0
 		});
 	}
 

@@ -130,6 +130,34 @@ export type PlayerMatchStats = {
 	roundsSurvived?: number;
 };
 
+export type GameWithRating = {
+	hltvRating: number;
+	[key: string]: any;
+};
+
+export const calculateWeightedAvgRating = (games: GameWithRating[]): number => {
+	if (games.length === 0) return 0;
+
+	const recentGames = games.slice(0, 20);
+	const maxWeight = Math.log(11);
+
+	let weightedSum = 0;
+	let totalWeight = 0;
+
+	recentGames.forEach((game, index) => {
+		let weight: number;
+		if (index < 10) {
+			weight = 1;
+		} else {
+			weight = Math.log(21 - index) / maxWeight;
+		}
+		weightedSum += game.hltvRating * weight;
+		totalWeight += weight;
+	});
+
+	return totalWeight > 0 ? weightedSum / totalWeight : 0;
+};
+
 export const calculatePlayerRating = (
 	playerStats: PlayerMatchStats,
 	rounds: number

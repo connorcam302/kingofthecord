@@ -1,6 +1,37 @@
 import { fetchMatches, getPlayerName } from '$lib/server/privateUtils';
-import { calculatePlayerRating, getMapString } from '$lib/utils';
-import { getAllSeasons, getActiveSteamids } from '$lib/server/mongodb';
+import { calculatePlayerRating, calculateWeightedAvgRating, getMapString } from '$lib/utils';
+import { getAllSeasons, getActiveSteamids, getMatchesBySeason } from '$lib/server/mongodb';
+
+interface PlayerRank {
+	steamid: string;
+	rating: number;
+}
+
+const calculateSeasonRankings = async (season: number): Promise<PlayerRank[]> => {
+	const seasonMatches = await getMatchesBySeason(season);
+
+	const playerRatings: Map<string, number[]> = new Map();
+
+	for (const match of seasonMatches) {
+		for (const player of match.playerStats) {
+			if (!playerRatings.has(player.steamid)) {
+				playerRatings.set(player.steamid, []);
+			}
+			const ratingData = calculatePlayerRating(player, match.rounds.length);
+			playerRatings.get(player.steamid)!.push(ratingData.hltvRating);
+		}
+	}
+
+	const rankings: PlayerRank[] = [];
+	for (const [steamid, ratings] of playerRatings) {
+		if (ratings.length >= 5) {
+			const avgRating = calculateWeightedAvgRating(ratings.map((r) => ({ hltvRating: r })));
+			rankings.push({ steamid, rating: avgRating });
+		}
+	}
+
+	return rankings.sort((a, b) => b.rating - a.rating);
+};
 
 export const load = async ({ params }) => {
 	const matchData = await fetchMatches();
@@ -22,25 +53,6 @@ export const load = async ({ params }) => {
 		}
 
 		return Object.values(uniquePlayers);
-	};
-
-	const removeBestAndWorstTenPercent = (array) => {
-		if (array.length < 10) {
-			return array;
-		} else {
-			array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-			const removeCount = Math.floor(array.length * 0.1);
-			const newArray = array.slice(removeCount, -1 * removeCount);
-			return array.slice(removeCount, -1 * removeCount);
-		}
-	};
-
-	const calculateAvgHLTVRating = (array) => {
-		array = array.sort((a, b) => b.hltvRating - a.hltvRating);
-		return (
-			removeBestAndWorstTenPercent(array).reduce((total, stat) => total + stat.hltvRating, 0) /
-			removeBestAndWorstTenPercent(array).length
-		);
 	};
 
 	const playerStats = [];
@@ -105,27 +117,10 @@ export const load = async ({ params }) => {
 				})
 				.playerStats.filter((playerStat) => playerStat.steamid === player.steamid).length > 0;
 
-		let oldHltvRatings;
-		if (playerInMostRecent) {
-			oldHltvRatings = removeBestAndWorstTenPercent(
-				mapStats
-					.slice()
-					.sort((a, b) => a.timestamp - b.timestamp)
-					.slice(0, -1)
-			)
-				.map((stat) => stat.hltvRating)
-				.sort((a, b) => b - a);
-		} else {
-			oldHltvRatings = removeBestAndWorstTenPercent(
-				mapStats.slice().sort((a, b) => a.timestamp - b.timestamp)
-			)
-				.map((stat) => stat.hltvRating)
-				.sort((a, b) => b - a);
-		}
+		const sortedStats = mapStats.sort((a, b) => b.timestamp - a.timestamp);
+		const hltvRatings = sortedStats;
 
-		const hltvRatings = removeBestAndWorstTenPercent(mapStats)
-			.map((stat) => stat.hltvRating)
-			.sort((a, b) => b - a);
+		const previous20Games = sortedStats.slice(20, 40);
 
 		playerStats.push({
 			mapStats: mapStats.sort((a, b) => b.timestamp - a.timestamp),
@@ -140,24 +135,13 @@ export const load = async ({ params }) => {
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
-			avg_hltvRating: hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length,
-			old_avg_hltvRating:
-				oldHltvRatings.reduce((total, stat) => total + stat, 0) / oldHltvRatings.length,
-			old_hltv_ratings: oldHltvRatings,
-			hltv_ratings: hltvRatings,
+			avg_hltvRating: calculateWeightedAvgRating(hltvRatings),
+			old_avg_hltvRating: calculateWeightedAvgRating(previous20Games),
+			old_hltv_ratings: previous20Games.map((s) => s.hltvRating),
+			hltv_ratings: hltvRatings.map((s) => s.hltvRating),
 			all_hltv_ratings: allHltvRatings,
 			ratingChange:
-				hltvRatings.reduce((total, stat) => total + stat, 0) / hltvRatings.length -
-				removeBestAndWorstTenPercent(
-					mapStats
-						.slice()
-						.sort((a, b) => a.timestamp - b.timestamp)
-						.slice(0, -1)
-				)
-					.map((stat) => stat.hltvRating)
-					.sort((a, b) => b - a)
-					.reduce((total, stat) => total + stat, 0) /
-					oldHltvRatings.length
+				calculateWeightedAvgRating(hltvRatings) - calculateWeightedAvgRating(previous20Games)
 		});
 	});
 
@@ -165,7 +149,8 @@ export const load = async ({ params }) => {
 	const tempTimeline = [];
 	playerStats
 		.find((playerStat) => playerStat.steamid === params.playerId)
-		.mapStats.reverse()
+		.mapStats.slice()
+		.reverse()
 		.forEach((stat) => {
 			tempTimeline.push({
 				hltvRating: stat.hltvRating,
@@ -177,7 +162,7 @@ export const load = async ({ params }) => {
 				adr: stat.adr
 			});
 			hltvTimeline.push({
-				rating: calculateAvgHLTVRating(tempTimeline),
+				rating: calculateWeightedAvgRating(tempTimeline.slice().reverse()),
 				currentMatch: {
 					hltvRating: stat.hltvRating,
 					timestamp: stat.timestamp,
@@ -286,11 +271,65 @@ export const load = async ({ params }) => {
 			duels.push(matchDuels);
 		});
 
+	const latestSeason = Math.max(...seasons);
+	const previousSeason = latestSeason > 1 ? latestSeason - 1 : null;
+
+	let currentSeasonRank = null;
+	let previousSeasonRank = null;
+	let currentSeasonTotal = 0;
+	let currentSeasonMatches = 0;
+	let currentSeasonRating = 0;
+	let previousSeasonTotal = 0;
+	let previousSeasonMatches = 0;
+	let previousSeasonRating = 0;
+
+	if (activeSteamids.includes(params.playerId)) {
+		const currentRankings = await calculateSeasonRankings(latestSeason);
+		currentSeasonTotal = currentRankings.length;
+		const currentIndex = currentRankings.findIndex((p) => p.steamid === params.playerId);
+		if (currentIndex !== -1) {
+			currentSeasonRank = currentIndex + 1;
+		}
+
+		const playerCurrentSeasonMatches =
+			playerStats
+				.find((p) => p.steamid === params.playerId)
+				?.mapStats.filter((m) => m.season === latestSeason) || [];
+		currentSeasonMatches = playerCurrentSeasonMatches.length;
+		currentSeasonRating = currentRankings.find((p) => p.steamid === params.playerId)?.rating || 0;
+
+		if (previousSeason) {
+			const prevRankings = await calculateSeasonRankings(previousSeason);
+			previousSeasonTotal = prevRankings.length;
+			const prevIndex = prevRankings.findIndex((p) => p.steamid === params.playerId);
+			if (prevIndex !== -1) {
+				previousSeasonRank = prevIndex + 1;
+			}
+
+			const playerPrevSeasonMatches =
+				playerStats
+					.find((p) => p.steamid === params.playerId)
+					?.mapStats.filter((m) => m.season === previousSeason) || [];
+			previousSeasonMatches = playerPrevSeasonMatches.length;
+			previousSeasonRating = prevRankings.find((p) => p.steamid === params.playerId)?.rating || 0;
+		}
+	}
+
 	return {
 		hltvTimeline: hltvTimeline,
 		stats: playerStats.find((playerStat) => playerStat.steamid === params.playerId),
 		maps: mapStats.sort((a, b) => b.matches - a.matches),
 		duels,
-		seasons
+		seasons,
+		accolades: {
+			currentSeasonRank,
+			currentSeasonTotal,
+			currentSeasonMatches,
+			currentSeasonRating,
+			previousSeasonRank,
+			previousSeasonTotal,
+			previousSeasonMatches,
+			previousSeasonRating
+		}
 	};
 };

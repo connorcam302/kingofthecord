@@ -1,9 +1,8 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { fail } from '@sveltejs/kit';
 import fs from 'fs/promises';
 import path from 'path';
 import { parseReplay } from '$lib/utils/parseReplay';
-import { connectToDatabase, insertMatch, matchExists } from '$lib/server/mongodb';
+import { connectToDatabase, insertMatch, matchExists, getUserBySteamid } from '$lib/server/mongodb';
 import { createLogger } from '$lib/server/logger';
 
 const log = createLogger('api-upload');
@@ -64,7 +63,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ reason: 'Database connection failed', error: String(error) }, { status: 500 });
 	}
 
-	const results = [];
+	const results: Array<{ id: string; status: string; reason?: string }> = [];
+	const newPlayers: Array<{ steamid: string; name: string }> = [];
+	const processedSteamids = new Set<string>();
 
 	for (const file of files) {
 		if (file instanceof File) {
@@ -88,6 +89,16 @@ export const POST: RequestHandler = async ({ request }) => {
 				const parsedData = parseReplay(filename);
 				log.info({ filename }, 'Successfully parsed replay');
 
+				for (const player of parsedData.playerStats) {
+					if (!processedSteamids.has(player.steamid)) {
+						processedSteamids.add(player.steamid);
+						const existingUser = await getUserBySteamid(player.steamid);
+						if (!existingUser) {
+							newPlayers.push({ steamid: player.steamid, name: player.name });
+						}
+					}
+				}
+
 				log.info({ filename }, 'Inserting match into MongoDB');
 				await insertMatch(parsedData);
 				log.info({ filename }, 'Successfully processed replay');
@@ -105,7 +116,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	return json(
-		{ results },
+		{ results, newPlayers },
 		{
 			headers: {
 				'Access-Control-Allow-Origin': '*'

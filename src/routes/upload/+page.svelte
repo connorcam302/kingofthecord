@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import { Upload } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
 
@@ -10,11 +12,15 @@
 		form: {
 			reason?: string;
 			results?: Array<{ id: string; status: string; reason?: string }>;
+			newPlayers?: Array<{ steamid: string; name: string }>;
 		} | null;
 	} = $props();
 
 	let selectedFiles = $state<FileList | null>(null);
 	let uploading = $state(false);
+	let playerNames = $state<Record<string, string>>({});
+	let addingPlayers = $state(false);
+	let addedPlayers = $state<string[]>([]);
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
@@ -39,7 +45,14 @@
 			if (!response.ok) {
 				form = { reason: result.reason || 'Upload failed', results: [] };
 			} else {
-				form = { results: result.results };
+				form = { results: result.results, newPlayers: result.newPlayers || [] };
+				playerNames = {};
+				addedPlayers = [];
+				if (result.newPlayers) {
+					for (const player of result.newPlayers) {
+						playerNames[player.steamid] = player.name;
+					}
+				}
 			}
 		} catch (error) {
 			console.error('Upload error:', error);
@@ -47,6 +60,51 @@
 		} finally {
 			uploading = false;
 		}
+	}
+
+	async function addPlayer(steamid: string) {
+		const displayName = playerNames[steamid];
+		if (!displayName) return;
+
+		addingPlayers = true;
+		try {
+			const response = await fetch('/api/users', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ steamid, displayName })
+			});
+
+			if (response.ok) {
+				addedPlayers = [...addedPlayers, steamid];
+			} else {
+				console.error('Failed to add player');
+			}
+		} catch (error) {
+			console.error('Error adding player:', error);
+		} finally {
+			addingPlayers = false;
+		}
+	}
+
+	async function addAllPlayers() {
+		if (!form?.newPlayers) return;
+
+		addingPlayers = true;
+		for (const player of form.newPlayers) {
+			if (!addedPlayers.includes(player.steamid)) {
+				try {
+					await fetch('/api/users', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ steamid: player.steamid, displayName: playerNames[player.steamid] || player.name })
+					});
+					addedPlayers = [...addedPlayers, player.steamid];
+				} catch (error) {
+					console.error('Error adding player:', error);
+				}
+			}
+		}
+		addingPlayers = false;
 	}
 </script>
 
@@ -139,6 +197,47 @@
 				</ul>
 				<Button variant="outline" onclick={() => goto('/')} class="mt-4 w-full">
 					Go to Leaderboard
+				</Button>
+			</Card.Content>
+		</Card.Root>
+	{/if}
+
+	{#if form?.newPlayers && form.newPlayers.length > 0}
+		<Card.Root class="mt-6">
+			<Card.Header>
+				<Card.Title>Add New Players</Card.Title>
+				<Card.Description>The following players were found in the uploaded replays and don't exist in the database yet.</Card.Description>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				{#each form.newPlayers as player}
+					{@const isAdded = addedPlayers.includes(player.steamid)}
+					<div class="flex items-center gap-2">
+						<div class="flex-1">
+							<Label for={player.steamid} class="sr-only">Player name</Label>
+							<Input
+								id={player.steamid}
+								type="text"
+								placeholder={player.name}
+								bind:value={playerNames[player.steamid]}
+								disabled={isAdded || addingPlayers}
+							/>
+						</div>
+						<Button
+							variant={isAdded ? 'outline' : 'default'}
+							size="sm"
+							disabled={isAdded || addingPlayers}
+							onclick={() => addPlayer(player.steamid)}
+						>
+							{isAdded ? 'Added' : 'Add'}
+						</Button>
+					</div>
+				{/each}
+				<Button
+					onclick={addAllPlayers}
+					disabled={addingPlayers || addedPlayers.length === form.newPlayers?.length}
+					class="w-full"
+				>
+					{addingPlayers ? 'Adding...' : 'Add All Players'}
 				</Button>
 			</Card.Content>
 		</Card.Root>

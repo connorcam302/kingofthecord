@@ -1,6 +1,6 @@
 import { fetchMatches, getAllMatchIds } from '$lib/server/privateUtils';
-import { calculatePlayerRating } from '$lib/utils';
-import { getAllSeasons, getActiveSteamids } from '$lib/server/mongodb';
+import { calculatePlayerRating, calculateWeightedAvgRating } from '$lib/utils';
+import { getAllSeasons, getActiveSteamids, getUserName } from '$lib/server/mongodb';
 
 export const load = async ({ params }) => {
 	const matchData = await fetchMatches();
@@ -8,25 +8,31 @@ export const load = async ({ params }) => {
 	const seasons = await getAllSeasons();
 	const activeSteamids = await getActiveSteamids();
 
-	const getUniquePlayers = (games) => {
+	for (const match of matchData) {
+		for (const playerStat of match.playerStats) {
+			playerStat.name = await getUserName(playerStat.steamid);
+		}
+	}
+
+	const getUniquePlayers = async (games) => {
 		const uniquePlayers = {};
 
-		games.forEach((game) => {
-			game.forEach((player) => {
+		for (const game of games) {
+			for (const player of game) {
 				if (!uniquePlayers[player.steamid]) {
 					uniquePlayers[player.steamid] = {
-						name: player.name,
+						name: await getUserName(player.steamid),
 						steamid: player.steamid
 					};
 				}
-			});
-		});
+			}
+		}
 
 		return Object.values(uniquePlayers);
 	};
 
 	const playerStats = [];
-	const playerList = getUniquePlayers(matchData.map((match) => match.playerStats)).filter(
+	const playerList = (await getUniquePlayers(matchData.map((match) => match.playerStats))).filter(
 		(player) => activeSteamids.includes(player.steamid)
 	);
 
@@ -56,10 +62,11 @@ export const load = async ({ params }) => {
 				mapStats.push({
 					...playerMatchData,
 					...ratingData,
-					isWinningTeam
+					isWinningTeam,
+					timestamp: match.lobbyInfo.timestamp
 				});
 			}
-		});
+		}
 
 		playerStats.push({
 			mapStats,
@@ -74,7 +81,7 @@ export const load = async ({ params }) => {
 			kills: mapStats.reduce((total, stat) => total + stat.kills_total, 0),
 			deaths: mapStats.reduce((total, stat) => total + stat.deaths_total, 0),
 			assists: mapStats.reduce((total, stat) => total + stat.assists_total, 0),
-			avg_hltvRating: mapStats.reduce((total, stat) => total + stat.hltvRating, 0) / mapStats.length
+			avg_hltvRating: mapStats.length > 0 ? calculateWeightedAvgRating(mapStats) : 0
 		});
 	});
 

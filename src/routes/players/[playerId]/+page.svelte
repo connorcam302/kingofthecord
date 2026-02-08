@@ -15,58 +15,33 @@
 	} from 'lucide-svelte';
 	import tippy from 'sveltejs-tippy';
 	import advancedFormat from 'dayjs/plugin/advancedFormat';
-	import HltvTimeline from './HltvTimeline.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import MapTable from './MapTable.svelte';
 	import DuelTable from './DuelTable.svelte';
+	import RatingBreakdown from './RatingBreakdown.svelte';
 	import { basicColumns, duelColumns } from './columns';
-	import HltvGroupings from './HltvGroupings.svelte';
-	import Input from '$lib/components/ui/input/input.svelte';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
 
 	dayjs.extend(advancedFormat);
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
 
-	const { stats, hltvTimeline, maps, duels } = data;
-
-	let duration = $state('30d');
-
-	const filterDuration = (timeline, duration) => {
-		if (duration === 'all') {
-			return timeline;
-		} else if (duration === '90d') {
-			//timestamp looks like the following 1737926942
-			return timeline.filter(
-				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 90 * 24 * 60 * 60 * 1000).unix()
-			);
-		} else if (duration === '30d') {
-			return timeline.filter(
-				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 30 * 24 * 60 * 60 * 1000).unix()
-			);
-		} else if (duration === '14d') {
-			return timeline.filter(
-				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 14 * 24 * 60 * 60 * 1000).unix()
-			);
-		} else if (duration === '7d') {
-			return timeline.filter(
-				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 7 * 24 * 60 * 60 * 1000).unix()
-			);
-		} else if (duration === '1d') {
-			return timeline.filter(
-				(d) => d.currentMatch.timestamp > dayjs(Date.now() - 24 * 60 * 60 * 1000).unix()
-			);
-		}
-	};
-
-	let filteredTimeline = $derived(filterDuration(hltvTimeline, duration));
+	const { stats, maps, duels, accolades, seasons } = data;
 
 	let mapFilter = $state('all');
 	let sortedBy = $state('date');
 	let sortDirection = $state('desc');
-	let intervalInput = $state();
-	let interval = $state(0.1);
 	let seasonFilter = $state('all');
+	let ratingDialogOpen = $state(false);
+
+	const getRankClass = (rank: number, total: number) => {
+		if (rank === 1) return 'bg-yellow-500 text-yellow-950';
+		if (rank === 2) return 'bg-gray-300 text-gray-800';
+		if (rank === 3) return 'bg-orange-700 text-orange-100';
+		if (total - rank <= 2) return 'bg-amber-900 text-amber-200';
+		return 'bg-primary/20 text-primary';
+	};
 
 	const filterMatches = (matches, mapFilter, sortedBy, sortDirection, seasonFilter) => {
 		let filteredMatches = matches;
@@ -76,7 +51,6 @@
 		if (seasonFilter !== 'all') {
 			filteredMatches = filteredMatches.filter((x) => x.season === parseInt(seasonFilter));
 		}
-		// sort by the sorted by criteria and sort direction
 		filteredMatches = filteredMatches.sort((a, b) => {
 			if (sortedBy === 'date') {
 				if (sortDirection === 'asc') {
@@ -120,13 +94,17 @@
 		return filteredMatches;
 	};
 
-	const filterDuels = (duels, mapFilter) => {
+	const filterDuels = (duels, mapFilter, seasonFilter) => {
 		let filteredDuels = duels;
 		if (mapFilter !== 'all') {
 			filteredDuels = filteredDuels.filter((x) => x.map === mapFilter);
 		}
-
-		// filtered duels contains the duel stats for each map, each will be an array of 5 objects like the following 76561198040636119: {attackerScore: 8, defenderScore: 1}. Total up the players attackerScore and defenderScore against each player
+		if (seasonFilter !== 'all') {
+			filteredDuels = filteredDuels.filter((x) => {
+				const match = stats.mapStats.find((m) => m.matchId === x.id);
+				return match && match.season === parseInt(seasonFilter);
+			});
+		}
 
 		const duelStatsRaw = [];
 
@@ -163,14 +141,92 @@
 		return duelStats;
 	};
 
+	const filterMapStats = (filteredMatches) => {
+		const mapStatsMap = {};
+
+		filteredMatches.forEach((match) => {
+			const mapName = getMapString(match.map);
+			if (!mapStatsMap[mapName]) {
+				mapStatsMap[mapName] = {
+					name: mapName,
+					totalKills: 0,
+					totalDeaths: 0,
+					totalAssists: 0,
+					totalAdr: 0,
+					totalRating: 0,
+					wins: 0,
+					matches: 0
+				};
+			}
+			mapStatsMap[mapName].totalKills += match.kills_total;
+			mapStatsMap[mapName].totalDeaths += match.deaths_total;
+			mapStatsMap[mapName].totalAssists += match.assists_total;
+			mapStatsMap[mapName].totalAdr += match.adr;
+			mapStatsMap[mapName].totalRating += match.hltvRating;
+			mapStatsMap[mapName].wins += match.didPlayerWin ? 1 : 0;
+			mapStatsMap[mapName].matches += 1;
+		});
+
+		return Object.values(mapStatsMap).map((stat: any) => ({
+			name: stat.name,
+			matches: stat.matches,
+			winRate: ((stat.wins / stat.matches) * 100).toFixed(0) + ' %',
+			avgKills: (stat.totalKills / stat.matches).toFixed(1),
+			avgDeaths: (stat.totalDeaths / stat.matches).toFixed(1),
+			avgAssists: (stat.totalAssists / stat.matches).toFixed(1),
+			avgAdr: Math.round(stat.totalAdr / stat.matches).toString(),
+			avgRating: (stat.totalRating / stat.matches).toFixed(2)
+		}));
+	};
+
+	const calculateFilteredStats = (filteredMatches) => {
+		if (filteredMatches.length === 0) {
+			return { kpr: 0, dpr: 0, apr: 0, adr: 0, kills: 0, deaths: 0, assists: 0, avgRating: 0 };
+		}
+		const kills = filteredMatches.reduce((sum, m) => sum + m.kills_total, 0);
+		const deaths = filteredMatches.reduce((sum, m) => sum + m.deaths_total, 0);
+		const assists = filteredMatches.reduce((sum, m) => sum + m.assists_total, 0);
+		const adr = filteredMatches.reduce((sum, m) => sum + m.adr, 0) / filteredMatches.length;
+		const rounds = filteredMatches.reduce((sum, m) => sum + m.rounds, 0);
+
+		const recentGames = filteredMatches.slice(0, 20);
+		const maxWeight = Math.log(11);
+		let weightedSum = 0;
+		let totalWeight = 0;
+		recentGames.forEach((game, index) => {
+			let weight;
+			if (index < 10) {
+				weight = 1;
+			} else {
+				weight = Math.log(21 - index) / maxWeight;
+			}
+			weightedSum += game.hltvRating * weight;
+			totalWeight += weight;
+		});
+		const avgRating = totalWeight > 0 ? weightedSum / totalWeight : 0;
+
+		return {
+			kpr: (kills / rounds).toFixed(2),
+			dpr: (deaths / rounds).toFixed(2),
+			apr: (assists / rounds).toFixed(2),
+			adr: adr.toFixed(0),
+			kills,
+			deaths,
+			assists,
+			avgRating
+		};
+	};
+
 	let matches = $state(
 		filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection, seasonFilter)
 	);
-	let duelStats = $state(filterDuels(duels, mapFilter));
+	let duelStats = $state(filterDuels(duels, mapFilter, seasonFilter));
+	let filteredStats = $derived(calculateFilteredStats(matches));
+	let filteredMapStats = $derived(filterMapStats(matches));
 
 	$effect(() => {
 		matches = filterMatches(stats.mapStats, mapFilter, sortedBy, sortDirection, seasonFilter);
-		duelStats = filterDuels(duels, mapFilter);
+		duelStats = filterDuels(duels, mapFilter, seasonFilter);
 	});
 </script>
 
@@ -180,91 +236,88 @@
 
 <div class="mx-auto flex max-w-screen-xl flex-col gap-8 px-1">
 	<div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-		<div>
+		<div class="flex items-center gap-4">
 			<div class="text-4xl font-semibold">{stats.name}</div>
+			{#if accolades && (accolades.currentSeasonRank || accolades.previousSeasonRank)}
+				<div class="flex gap-2">
+					{#if accolades.currentSeasonRank}
+						<div
+							class="cursor-help rounded-full px-3 py-1 text-xs font-medium {getRankClass(
+								accolades.currentSeasonRank,
+								accolades.currentSeasonTotal
+							)}"
+							use:tippy={{
+								content: `Rank ${accolades.currentSeasonRank} of ${accolades.currentSeasonTotal} players<br>${accolades.currentSeasonMatches} matches played<br>Rating: ${accolades.currentSeasonRating.toFixed(2)}`,
+								allowHTML: true
+							}}
+						>
+							S{seasons[seasons.length - 1]} #{accolades.currentSeasonRank}
+						</div>
+					{/if}
+					{#if accolades.previousSeasonRank}
+						<div
+							class="cursor-help rounded-full px-3 py-1 text-xs font-medium {getRankClass(
+								accolades.previousSeasonRank,
+								accolades.previousSeasonTotal
+							)}"
+							use:tippy={{
+								content: `Rank ${accolades.previousSeasonRank} of ${accolades.previousSeasonTotal} players<br>${accolades.previousSeasonMatches} matches played<br>Rating: ${accolades.previousSeasonRating.toFixed(2)}`,
+								allowHTML: true
+							}}
+						>
+							S{seasons[seasons.length - 2]} #{accolades.previousSeasonRank}
+						</div>
+					{/if}
+				</div>
+			{/if}
 		</div>
-		<div class="flex w-full justify-between px-2 md:justify-end md:gap-8">
-			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'Kills' }}>
-				<Sword />
-				{(stats.kills / stats.mapStats.length).toFixed(1)}
+		<div class="flex flex-wrap justify-center gap-3">
+			<div class="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm">
+				<Sword class="h-4 w-4 text-red-500" />
+				<span class="font-medium">Kills</span>
+				<span class="font-bold text-foreground">{filteredStats.kills}</span>
 			</div>
-			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'Deaths' }}>
-				<Skull />
-				{(stats.deaths / stats.mapStats.length).toFixed(1)}
+			<div class="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm">
+				<Skull class="h-4 w-4 text-slate-400" />
+				<span class="font-medium">Deaths</span>
+				<span class="font-bold text-foreground">{filteredStats.deaths}</span>
 			</div>
-			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'Assists' }}>
-				<Handshake />
-				{(stats.assists / stats.mapStats.length).toFixed(1)}
+			<div class="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm">
+				<Handshake class="h-4 w-4 text-blue-400" />
+				<span class="font-medium">Assists</span>
+				<span class="font-bold text-foreground">{filteredStats.assists}</span>
 			</div>
-			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'ADR' }}>
-				<CrosshairIcon />
-				{stats.adr.toFixed(0)}
+			<div class="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm">
+				<CrosshairIcon class="h-4 w-4 text-yellow-500" />
+				<span class="font-medium">ADR</span>
+				<span class="font-bold text-foreground">{filteredStats.adr}</span>
 			</div>
-			<div class="flex items-center gap-1 text-lg" use:tippy={{ content: 'Rating' }}>
-				<CandlestickChart />
-				{stats.avg_hltvRating.toFixed(2)}
-			</div>
-		</div>
-	</div>
-
-	<div class="rounded-xl border p-2 px-4">
-		{#key filteredTimeline}
-			<div class="w-full grow">
-				<HltvTimeline timeline={filteredTimeline} />
-			</div>
-		{/key}
-		<div class="flex gap-2">
-			<Button
-				variant={duration === 'all' ? 'secondary' : 'outline'}
-				onclick={() => (duration = 'all')}>All</Button
+			<button
+				class="flex items-center gap-2 rounded-lg bg-primary/20 px-4 py-2 text-sm transition-colors hover:bg-primary/30"
+				onclick={() => (ratingDialogOpen = true)}
 			>
-			<Button
-				variant={duration === '90d' ? 'secondary' : 'outline'}
-				onclick={() => (duration = '90d')}>90d</Button
-			>
-			<Button
-				variant={duration === '30d' ? 'secondary' : 'outline'}
-				onclick={() => (duration = '30d')}>30d</Button
-			>
-			<Button
-				variant={duration === '14d' ? 'secondary' : 'outline'}
-				onclick={() => (duration = '14d')}>14d</Button
-			>
-			<Button
-				variant={duration === '7d' ? 'secondary' : 'outline'}
-				onclick={() => (duration = '7d')}>7d</Button
-			>
-			<Button
-				variant={duration === '1d' ? 'secondary' : 'outline'}
-				onclick={() => (duration = '1d')}>1d</Button
-			>
-		</div>
-	</div>
-	<div class="rounded-xl border p-2 px-4">
-		{#key [matches, interval]}
-			<div class="w-full grow">
-				<HltvGroupings matchData={matches} {interval} />
-			</div>
-		{/key}
-		<div class="flex gap-2">
-			<Input
-				step=".01"
-				min="0.01"
-				max="2"
-				type="email"
-				placeholder="Interval"
-				class="w-20"
-				bind:value={intervalInput}
-			/>
-			<Button type="submit" onclick={() => (interval = parseFloat(intervalInput))}>Set</Button>
+				<CandlestickChart class="h-4 w-4 text-primary" />
+				<span class="font-medium">Rating</span>
+				<span class="font-bold text-primary">{filteredStats.avgRating.toFixed(2)}</span>
+			</button>
 		</div>
 	</div>
+	<Dialog.Root open={ratingDialogOpen} onOpenChange={(v) => (ratingDialogOpen = v)}>
+		<Dialog.Portal>
+			<Dialog.Overlay class="fixed inset-0 z-50 bg-black/50" />
+			<Dialog.Content
+				class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg"
+			>
+				<RatingBreakdown mapStats={matches} />
+			</Dialog.Content>
+		</Dialog.Portal>
+	</Dialog.Root>
 	<div class="flex flex-col-reverse gap-4 md:flex-row">
-		<div class="flex flex-col gap-2">
-			<div class="flex justify-between gap-2">
+		<div class="flex w-full flex-col gap-2 overflow-x-auto">
+			<div class="flex flex-wrap gap-2">
 				<div class="flex gap-2">
 					<Select.Root type="single" bind:value={mapFilter}>
-						<Select.Trigger class="w-[140px]"
+						<Select.Trigger class="w-32"
 							>{mapFilter === 'all' ? 'Select Map' : getMapString(mapFilter)}</Select.Trigger
 						>
 						<Select.Content>
@@ -275,7 +328,7 @@
 						</Select.Content>
 					</Select.Root>
 					<Select.Root type="single" bind:value={seasonFilter}>
-						<Select.Trigger class="w-[140px]"
+						<Select.Trigger class="w-32"
 							>{seasonFilter === 'all' ? 'All Seasons' : `Season ${seasonFilter}`}</Select.Trigger
 						>
 						<Select.Content>
@@ -288,7 +341,7 @@
 				</div>
 				<div class="flex gap-2">
 					<Select.Root type="single" bind:value={sortedBy}>
-						<Select.Trigger class="w-[140px]"
+						<Select.Trigger class="w-28"
 							>{sortedBy === 'date' ? 'Sort By' : sortedBy}</Select.Trigger
 						>
 						<Select.Content>
@@ -302,12 +355,13 @@
 					</Select.Root>
 					<Button
 						variant="outline"
+						size="sm"
 						onclick={() => (sortDirection = sortDirection === 'asc' ? 'desc' : 'asc')}
 					>
 						{#if sortDirection === 'asc'}
-							<ArrowUp />
+							<ArrowUp class="h-4 w-4" />
 						{:else}
-							<ArrowDown />
+							<ArrowDown class="h-4 w-4" />
 						{/if}
 					</Button>
 				</div>
@@ -360,9 +414,8 @@
 											<Handshake />
 											{match.assists_total}
 										</div>
-										<div class="flex w-32 items-center justify-end gap-2 text-lg md:w-32"></div>
 										<div
-											class="flex w-32 items-center gap-1 text-lg"
+											class="flex w-32 items-center justify-end gap-1 text-lg md:w-32"
 											use:tippy={{ content: 'ADR' }}
 										>
 											<CrosshairIcon />
@@ -384,7 +437,7 @@
 			</div>
 		</div>
 		<div class="flex w-96 flex-col gap-4 overflow-auto md:w-full">
-			<MapTable data={maps} columns={basicColumns} />
+			<MapTable data={filteredMapStats} columns={basicColumns} />
 			{#key duelStats}
 				<DuelTable data={duelStats} columns={duelColumns} />
 			{/key}
